@@ -3,19 +3,22 @@
 import { useState } from "react";
 import { auth } from "@/lib/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const router = useRouter();
+
 
   const handleLogin = async () => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       setMessage(`Welcome back, ${userCredential.user.email}`);
-      console.log("Logged in user:", userCredential.user);
+      
+      router.push("/homepage");
     } catch (error: any) {
-      console.error(error);
       setMessage(`${error.code}: ${error.message}`);
     }
   };

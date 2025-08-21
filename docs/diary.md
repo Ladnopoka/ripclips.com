@@ -22,3 +22,17 @@
 4. Got my first successful registration using my own email and passowrd. The user is displayed in my Firebase project
 5. Added some Tailwind CSS styling to make the working page to be a bit more fun
 6. Added full name field and update profile logic
+7. Added login page with similar logic like on the register page
+
+
+### Homepage and Login/Register routing
+
+1. Restructured directories to make Homepage to be main page
+2. Login and Register pages are now accessible from homepage
+3. Added "router.push("/homepage");" to redirect back to homepage after successful login or registration
+
+4. How does routing from homepage works?:
+    - onAuthStateChanged listens for auth changes.
+    - If the user is logged in -> shows greeting + logout button.
+    - If no user -> shows Register / Login buttons.
+    - Clicking Logout signs the user out and returns to the same page showing the buttons.
