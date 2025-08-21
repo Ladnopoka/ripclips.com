@@ -2,10 +2,13 @@
 
 import Image from "next/image";
 import { auth } from "@/lib/firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword,
+         updateProfile,
+ } from "firebase/auth";
 import { useState } from "react";
 
 export default function Home() {
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -17,10 +20,17 @@ export default function Home() {
         email,
         password
       );
-      setMessage(`Signed up as: ${userCredential.user.email}`);
-      console.log("User:", userCredential.user); // testing here if user details to console
+
+      await updateProfile(userCredential.user, {
+        displayName: fullName,
+      });
+
+      setMessage(
+        `Welcome, ${userCredential.user.displayName}! Signed up as: ${userCredential.user.email}`
+      );
+      
     } catch (error: any) {
-      console.error(error);
+      
       setMessage(`${error.code}: ${error.message}`);
     }
   };
@@ -32,11 +42,19 @@ export default function Home() {
           Babylon Assessment Task
         </h1>
         <p className="mt-4 text-green-800">
-          This is a simple authentication setup using Firebase.
+          This is a simple authentication setup using Firebase
         </p>
       </main>
 
       <h1 className="text-2xl font-bold text-green-700 mt-8">Test Signup</h1>
+
+      <input
+        className="border border-green-400 p-2 rounded text-black focus:border-green-600 focus:ring-green-200 focus:ring-2 w-full max-w-md"
+        type="text"
+        placeholder="Enter full name"
+        value={fullName}
+        onChange={(e) => setFullName(e.target.value)}
+      />
 
       <input
         className="border border-green-400 p-2 rounded text-black focus:border-green-600 focus:ring-green-200 focus:ring-2 w-full max-w-md"

@@ -20,4 +20,5 @@
 2. To create new pages, I must put them into app directory
 3. Turned page.tsx into a client component
 4. Got my first successful registration using my own email and passowrd. The user is displayed in my Firebase project
+5. Added some Tailwind CSS styling to make the working page to be a bit more fun
 
