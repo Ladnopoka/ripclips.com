@@ -51,5 +51,3 @@ Before building the full RIP Clips hub, the project starts with a **solid authen
 * Learn modern frontend development with **Next.js App Router**.
 * Gain hands-on experience integrating **Firebase Authentication**.
 * Build a foundation for user-based features like clip submission, voting, and community engagement.
-
----
