@@ -36,3 +36,5 @@
     - If the user is logged in -> shows greeting + logout button.
     - If no user -> shows Register / Login buttons.
     - Clicking Logout signs the user out and returns to the same page showing the buttons.
+
+5. Copied styling from homepage and pasted into login/register pages

@@ -4,6 +4,7 @@ import { auth } from "@/lib/firebase";
 import {
   createUserWithEmailAndPassword,
   updateProfile,
+  onAuthStateChanged
 } from "firebase/auth";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -14,6 +15,13 @@ export default function Home() {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const router = useRouter();
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      // User is signed in, redirect to homepage
+      router.push("/homepage");
+    }
+  });
 
   const handleRegister = async () => {
     try {
