@@ -6,7 +6,7 @@ import {
   updateProfile,
   onAuthStateChanged
 } from "firebase/auth";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function Home() {
@@ -16,14 +16,22 @@ export default function Home() {
   const [message, setMessage] = useState("");
   const router = useRouter();
 
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      // User is signed in, redirect to homepage
-      router.push("/homepage");
-    }
-  });
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        router.push("/homepage");
+      }
+    });
+
+    // cleanup on unmount
+    return () => unsubscribe();
+  }, [router]);
 
   const handleRegister = async () => {
+    if (!fullName.trim()) {
+      setMessage("Please enter your full name.");
+      return;
+    }
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
