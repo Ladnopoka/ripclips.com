@@ -19,4 +19,5 @@
 1. Learning about Password authentication with Firebase at https://firebase.google.com/docs/auth/web/password-auth
 2. To create new pages, I must put them into app directory
 3. Turned page.tsx into a client component
+4. Got my first successful registration using my own email and passowrd. The user is displayed in my Firebase project
 
