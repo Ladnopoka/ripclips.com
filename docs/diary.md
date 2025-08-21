@@ -39,3 +39,4 @@
 
 5. Copied styling from homepage and pasted into login/register pages
 6. Looking into implementing a function where logged in user cannot access login page
+7. Added change where user cannot register without entering name
