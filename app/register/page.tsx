@@ -1,9 +1,10 @@
 "use client";
 
 import { auth } from "@/lib/firebase";
-import { createUserWithEmailAndPassword,
-         updateProfile,
- } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -31,58 +32,55 @@ export default function Home() {
       );
 
       router.push("/homepage");
-      
     } catch (error: any) {
-      
       setMessage(`${error.code}: ${error.message}`);
     }
   };
 
   return (
-    <div className="p-8 flex flex-col items-center gap-4 bg-green-50 min-h-screen">
-      <main className="flex min-h-[100px] flex-col items-center justify-between p-12 bg-green-100 rounded-lg shadow-md w-full max-w-xl">
-        <h1 className="text-4xl font-bold text-green-700">
-          Babylon Assessment Task
+    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-900 px-4">
+      <div className="bg-slate-800 p-8 rounded-xl shadow-lg text-center max-w-md w-full">
+        <h1 className="text-4xl font-bold text-green-500 mb-6">
+          Register
         </h1>
-        <p className="mt-4 text-green-800">
-          This is a simple authentication setup using Firebase
+        <p className="text-green-200 mb-8">
+          Create your account below
         </p>
-      </main>
-
-      <h1 className="text-2xl font-bold text-green-700 mt-8">Test Signup</h1>
-
-      <input
-        className="border border-green-400 p-2 rounded text-black focus:border-green-600 focus:ring-green-200 focus:ring-2 w-full max-w-md"
-        type="text"
-        placeholder="Enter full name"
-        value={fullName}
-        onChange={(e) => setFullName(e.target.value)}
-      />
-
-      <input
-        className="border border-green-400 p-2 rounded text-black focus:border-green-600 focus:ring-green-200 focus:ring-2 w-full max-w-md"
-        type="email"
-        placeholder="Enter email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-
-      <input
-        className="border border-green-400 p-2 rounded text-black focus:border-green-600 focus:ring-green-200 focus:ring-2 w-full max-w-md"
-        type="password"
-        placeholder="Enter password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-
-      <button
-        className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors w-full max-w-md"
-        onClick={handleRegister}
-      >
-        Register
-      </button>
-
-      {message && <p className="mt-4 text-green-800">{message}</p>}
+        <input
+          className="border border-green-400 bg-slate-900 p-2 rounded text-white focus:border-green-600 focus:ring-green-200 focus:ring-2 w-full mb-4"
+          type="text"
+          placeholder="Enter full name"
+          value={fullName}
+          onChange={(e) => setFullName(e.target.value)}
+        />
+        <input
+          className="border border-green-400 bg-slate-900 p-2 rounded text-white focus:border-green-600 focus:ring-green-200 focus:ring-2 w-full mb-4"
+          type="email"
+          placeholder="Enter email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input
+          className="border border-green-400 bg-slate-900 p-2 rounded text-white focus:border-green-600 focus:ring-green-200 focus:ring-2 w-full mb-6"
+          type="password"
+          placeholder="Enter password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button
+          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded transition w-full mb-4"
+          onClick={handleRegister}
+        >
+          Register
+        </button>
+        {message && <p className="mt-2 text-green-200">{message}</p>}
+        <button
+          className="mt-6 text-green-400 hover:underline"
+          onClick={() => router.push("/login")}
+        >
+          Already have an account? Login
+        </button>
+      </div>
     </div>
   );
 }

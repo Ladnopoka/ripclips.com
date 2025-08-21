@@ -11,12 +11,10 @@ export default function LoginPage() {
   const [message, setMessage] = useState("");
   const router = useRouter();
 
-
   const handleLogin = async () => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       setMessage(`Welcome back, ${userCredential.user.email}`);
-      
       router.push("/homepage");
     } catch (error: any) {
       setMessage(`${error.code}: ${error.message}`);
@@ -24,36 +22,38 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="p-8 flex flex-col items-center gap-4 bg-green-50 min-h-screen">
-      <main className="flex flex-col items-center p-12 bg-green-100 rounded-lg shadow-md w-full max-w-xl">
-        <h1 className="text-3xl font-bold text-green-700">Login</h1>
-        <p className="mt-4 text-green-800">Enter your details to log in</p>
-      </main>
-
-      <input
-        className="border border-green-400 p-2 rounded text-black focus:border-green-600 focus:ring-green-200 focus:ring-2 w-full max-w-md mt-6"
-        type="email"
-        placeholder="Enter email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-
-      <input
-        className="border border-green-400 p-2 rounded text-black focus:border-green-600 focus:ring-green-200 focus:ring-2 w-full max-w-md"
-        type="password"
-        placeholder="Enter password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-
-      <button
-        className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors w-full max-w-md"
-        onClick={handleLogin}
-      >
-        Login
-      </button>
-
-      {message && <p className="mt-4 text-green-800">{message}</p>}
+    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-900 px-4">
+      <div className="bg-slate-800 p-8 rounded-xl shadow-lg text-center max-w-md w-full">
+        <h1 className="text-4xl font-bold text-green-500 mb-6">Login</h1>
+        <p className="text-green-200 mb-8">Enter your details to log in</p>
+        <input
+          className="border border-green-400 bg-slate-900 p-2 rounded text-white focus:border-green-600 focus:ring-green-200 focus:ring-2 w-full mb-4"
+          type="email"
+          placeholder="Enter email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input
+          className="border border-green-400 bg-slate-900 p-2 rounded text-white focus:border-green-600 focus:ring-green-200 focus:ring-2 w-full mb-6"
+          type="password"
+          placeholder="Enter password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button
+          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded transition w-full mb-4"
+          onClick={handleLogin}
+        >
+          Login
+        </button>
+        {message && <p className="mt-2 text-green-200">{message}</p>}
+        <button
+          className="mt-6 text-green-400 hover:underline"
+          onClick={() => router.push("/register")}
+        >
+          Don't have an account? Register
+        </button>
+      </div>
     </div>
   );
 }
