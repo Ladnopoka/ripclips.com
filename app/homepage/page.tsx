@@ -3,36 +3,7 @@
 import { useState, useEffect } from "react";
 import { useAuthContext } from "@/lib/AuthContext";
 import { getApprovedClips, hasUserLikedClip, likeClip, unlikeClip, incrementViews, type ClipSubmission } from "@/lib/database";
-
-// Helper function to format Twitch embed URL
-const formatEmbedUrl = (clipUrl: string): string => {
-  if (clipUrl.includes('clips.twitch.tv/embed')) {
-    return clipUrl;
-  }
-  
-  if (clipUrl.includes('clips.twitch.tv/')) {
-    const clipId = clipUrl.split('/').pop();
-    return `https://clips.twitch.tv/embed?clip=${clipId}&parent=localhost`;
-  }
-  
-  return clipUrl;
-};
-
-// Helper function to format timestamp
-const formatTimestamp = (timestamp: any): string => {
-  if (!timestamp || !timestamp.toDate) return "Recently";
-  
-  const now = new Date();
-  const clipDate = timestamp.toDate();
-  const diffMs = now.getTime() - clipDate.getTime();
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-  const diffDays = Math.floor(diffHours / 24);
-  
-  if (diffHours < 1) return "Just now";
-  if (diffHours < 24) return `${diffHours}h ago`;
-  if (diffDays < 7) return `${diffDays}d ago`;
-  return clipDate.toLocaleDateString();
-};
+import { formatEmbedUrl, formatTimestamp } from "@/lib/utils";
 
 interface ClipCardProps {
   clip: ClipSubmission & { userHasLiked?: boolean };
@@ -123,22 +94,49 @@ const ClipCard: React.FC<ClipCardProps> = ({ clip, onLikeChange }) => {
                   : 'text-red-200/60 hover:text-red-400'
               } ${!user && 'cursor-not-allowed opacity-50'} ${liking && 'opacity-50'}`}
             >
-              {liking ? (
+              {liked ? (
+                <img
+                  src="/alkLFG-2x.gif"  // make sure this gif is saved with infinite loop
+                  alt="Liked"
+                  className="w-8 h-8"
+                />
+              ) : (
+                <img
+                  src="/alkLFG-2x.gif"
+                  alt="Not liked"
+                  className="w-8 h-8"
+                />
+              )}
+              {/* {liking ? (
                 <div className="w-5 h-5 animate-spin rounded-full border-2 border-red-400 border-t-transparent"></div>
               ) : (
                 <svg className="w-5 h-5" fill={liked ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                 </svg>
-              )}
+              )} */}
               <span>{clip.likes || 0}</span>
             </button>
-            
-            <button className="flex items-center space-x-2 text-red-200/60 hover:text-red-400 transition-colors">
+
+            {/* {liked ? (
+              <img
+                src="/alkLFG-2x.gif"  // make sure this gif is saved with infinite loop
+                alt="Liked"
+                className="w-5 h-5"
+              />
+            ) : (
+              <img
+                src="/alkLFG-2x.gif"
+                alt="Not liked"
+                className="w-5 h-5"
+              />
+            )}            
+             */}
+            {/* <button className="flex items-center space-x-2 text-red-200/60 hover:text-red-400 transition-colors">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.955 8.955 0 01-2.622-.389l-3.378 2.032 1.179-3.537A8 8 0 113 12z" />
               </svg>
               <span>{clip.comments || 0}</span>
-            </button>
+            </button> */}
 
             <button className="flex items-center space-x-2 text-red-200/60 hover:text-red-400 transition-colors">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

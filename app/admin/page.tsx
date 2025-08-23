@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { SuccessMessage } from "@/components/ui/SuccessMessage";
+import { formatEmbedUrl } from "@/lib/utils";
 import { 
   getPendingClips, 
   approveClip, 
@@ -205,7 +206,7 @@ export default function AdminPage() {
                       {/* Embedded Video Preview */}
                       <div className="bg-black">
                         <iframe 
-                          src={clip.clipUrl.replace('https://clips.twitch.tv/', 'https://clips.twitch.tv/embed?clip=').replace('&parent=localhost', '') + '&parent=localhost'}
+                          src={formatEmbedUrl(clip.clipUrl)}
                           frameBorder="0" 
                           allowFullScreen 
                           scrolling="no" 
