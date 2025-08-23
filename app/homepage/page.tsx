@@ -1,25 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { auth } from "@/lib/firebase";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { useAuthContext } from "@/lib/AuthContext";
+import { useAuth } from "@/lib/useAuth";
 
 export default function Homepage() {
-  const [user, setUser] = useState<any>(null);
+  const { user } = useAuthContext();
+  const { logout } = useAuth();
   const router = useRouter();
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-    });
-
-    return () => unsubscribe();
-  }, []);
-
   const handleLogout = async () => {
-    await signOut(auth);
-    setUser(null);
+    await logout();
   };
 
   if (user) {
@@ -27,7 +18,7 @@ export default function Homepage() {
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-900 px-4">
         <div className="bg-slate-800 p-8 rounded-xl shadow-lg text-center max-w-md w-full">
           <h1 className="text-4xl font-bold text-green-500 mb-6">
-            Hey, {user.displayName}! You're successfully logged in!
+            Hey, {user.displayName}! You&apos;re successfully logged in!
           </h1>
           <button
             className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded transition"

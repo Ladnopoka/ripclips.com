@@ -1,33 +1,52 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { auth } from "@/lib/firebase";
-import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/useAuth";
+import { validateLoginForm } from "@/lib/validation";
+import { ErrorMessage } from "@/components/ui/ErrorMessage";
+import { SuccessMessage } from "@/components/ui/SuccessMessage";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
+  const [errors, setErrors] = useState<string[]>([]);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const { login } = useAuth();
   const router = useRouter();
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        router.push("/homepage"); // redirect logged-in users
-      }
-    });
-
-    return () => unsubscribe();
-  }, [router]); 
-
   const handleLogin = async () => {
+    // Reset messages
+    setErrors([]);
+    setSuccessMessage("");
+
+    // Validate form
+    const validation = validateLoginForm(email, password);
+    if (!validation.isValid) {
+      setErrors(validation.errors);
+      return;
+    }
+
+    setIsLoading(true);
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      setMessage(`Welcome back, ${userCredential.user.email}`);
-      router.push("/homepage");
-    } catch (error: any) {
-      setMessage(`${error.code}: ${error.message}`);
+      const user = await login(email, password);
+      setSuccessMessage(`Welcome back, ${user.email}!`);
+      setTimeout(() => router.push("/homepage"), 1500);
+    } catch (error: unknown) {
+      const firebaseError = error as { code?: string };
+      const errorMessage = firebaseError.code === 'auth/user-not-found' 
+        ? "No account found with this email address"
+        : firebaseError.code === 'auth/wrong-password'
+        ? "Incorrect password"
+        : firebaseError.code === 'auth/invalid-credential'
+        ? "Invalid email or password"
+        : "Login failed. Please try again.";
+      setErrors([errorMessage]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -51,17 +70,20 @@ export default function LoginPage() {
           onChange={(e) => setPassword(e.target.value)}
         />
         <button
-          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded transition w-full mb-4"
+          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded transition w-full mb-4 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
           onClick={handleLogin}
+          disabled={isLoading}
         >
-          Login
+          {isLoading ? <LoadingSpinner size="sm" /> : "Login"}
         </button>
-        {message && <p className="mt-2 text-green-200">{message}</p>}
+        
+        <ErrorMessage errors={errors} className="mb-4" />
+        <SuccessMessage message={successMessage} className="mb-4" />
         <button
           className="mt-6 text-green-400 hover:underline"
           onClick={() => router.push("/register")}
         >
-          Don't have an account? Register
+          Don&apos;t have an account? Register
         </button>
       </div>
     </div>

@@ -1,55 +1,51 @@
 "use client";
 
-import { auth } from "@/lib/firebase";
-import {
-  createUserWithEmailAndPassword,
-  updateProfile,
-  onAuthStateChanged
-} from "firebase/auth";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/useAuth";
+import { validateRegistrationForm } from "@/lib/validation";
+import { ErrorMessage } from "@/components/ui/ErrorMessage";
+import { SuccessMessage } from "@/components/ui/SuccessMessage";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
-export default function Home() {
+export default function RegisterPage() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
+  const [errors, setErrors] = useState<string[]>([]);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const { register } = useAuth();
   const router = useRouter();
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        router.push("/homepage");
-      }
-    });
-
-    // cleanup on unmount
-    return () => unsubscribe();
-  }, [router]);
-
   const handleRegister = async () => {
-    if (!fullName.trim()) {
-      setMessage("Please enter your full name.");
+    // Reset messages
+    setErrors([]);
+    setSuccessMessage("");
+
+    // Validate form
+    const validation = validateRegistrationForm(email, password, fullName);
+    if (!validation.isValid) {
+      setErrors(validation.errors);
       return;
     }
+
+    setIsLoading(true);
     try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-
-      await updateProfile(userCredential.user, {
-        displayName: fullName,
-      });
-
-      setMessage(
-        `Welcome, ${userCredential.user.displayName}! Signed up as: ${userCredential.user.email}`
-      );
-
-      router.push("/homepage");
-    } catch (error: any) {
-      setMessage(`${error.code}: ${error.message}`);
+      const user = await register(email, password, fullName);
+      setSuccessMessage(`Welcome, ${user.displayName}! Registration successful.`);
+      setTimeout(() => router.push("/homepage"), 1500);
+    } catch (error: unknown) {
+      const firebaseError = error as { code?: string };
+      const errorMessage = firebaseError.code === 'auth/email-already-in-use'
+        ? "An account with this email already exists"
+        : firebaseError.code === 'auth/weak-password'
+        ? "Password is too weak"
+        : "Registration failed. Please try again.";
+      setErrors([errorMessage]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -84,12 +80,15 @@ export default function Home() {
           onChange={(e) => setPassword(e.target.value)}
         />
         <button
-          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded transition w-full mb-4"
+          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded transition w-full mb-4 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
           onClick={handleRegister}
+          disabled={isLoading}
         >
-          Register
+          {isLoading ? <LoadingSpinner size="sm" /> : "Register"}
         </button>
-        {message && <p className="mt-2 text-green-200">{message}</p>}
+        
+        <ErrorMessage errors={errors} className="mb-4" />
+        <SuccessMessage message={successMessage} className="mb-4" />
         <button
           className="mt-6 text-green-400 hover:underline"
           onClick={() => router.push("/login")}
