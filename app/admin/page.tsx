@@ -15,7 +15,7 @@ import {
 } from "@/lib/database";
 
 // Admin user check - in production, this should be more robust
-const ADMIN_EMAILS = ['admin@ripclips.com', 'moderator@ripclips.com'];
+const ADMIN_EMAILS = ['ladnopokaa@gmail.com', 'ivanovworkbusiness@gmail.com'];
 
 export default function AdminPage() {
   const { user, loading: authLoading } = useAuthContext();

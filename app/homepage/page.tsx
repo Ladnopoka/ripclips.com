@@ -165,6 +165,51 @@ const ClipCard: React.FC<ClipCardProps> = ({ clip, onLikeChange }) => {
 };
 
 export default function Homepage() {
+  const { user } = useAuthContext();
+  const [clips, setClips] = useState<ClipSubmission[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchClips = async () => {
+      setLoading(true);
+      try {
+        const approvedClips = await getApprovedClips();
+        
+        // Check like status for each clip if user is logged in
+        if (user && approvedClips.length > 0) {
+          const clipsWithLikeStatus = await Promise.all(
+            approvedClips.map(async (clip) => {
+              if (clip.id) {
+                const userHasLiked = await hasUserLikedClip(clip.id, user.uid);
+                return { ...clip, userHasLiked };
+              }
+              return clip;
+            })
+          );
+          setClips(clipsWithLikeStatus);
+        } else {
+          setClips(approvedClips);
+        }
+      } catch (error) {
+        console.error("Failed to fetch clips:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchClips();
+  }, [user]);
+
+  // Handler for updating like state in the UI
+  const handleLikeChange = (clipId: string, newLikedState: boolean, newLikeCount: number) => {
+    setClips((prevClips) =>
+      prevClips.map((clip) =>
+        clip.id === clipId
+          ? { ...clip, userHasLiked: newLikedState, likes: newLikeCount }
+          : clip
+      )
+    );
+  };
+
   return (
     <div className="min-h-screen bg-black">
       {/* Feed Container */}
@@ -177,17 +222,24 @@ export default function Homepage() {
 
         {/* Clip Feed */}
         <div className="space-y-6">
-          {mockClips.map((clip) => (
-            <ClipCard key={clip.id} clip={clip} />
+          {clips.map((clip) => (
+            <ClipCard key={clip.id} clip={clip} onLikeChange={handleLikeChange} />
           ))}
-          
-          {/* Loading placeholder for more clips */}
-          <div className="bg-gradient-to-b from-gray-900 to-red-950/30 rounded-xl border border-red-900/50 p-8 text-center">
-            <div className="animate-pulse">
-              <div className="w-16 h-16 bg-red-900/50 rounded-full mx-auto mb-4"></div>
-              <p className="text-red-200/60">Loading more deaths...</p>
+
+          {loading ? (
+            <div className="bg-gradient-to-b from-gray-900 to-red-950/30 rounded-xl border border-red-900/50 p-8 text-center">
+              <div className="animate-pulse">
+                <div className="w-16 h-16 bg-red-900/50 rounded-full mx-auto mb-4"></div>
+                <p className="text-red-200/60">Loading deaths...</p>
+              </div>
             </div>
-          </div>
+          ) : clips.length === 0 ? (
+            <div className="bg-gradient-to-b from-gray-900 to-red-950/30 rounded-xl border border-red-900/50 p-8 text-center">
+              <div className="mb-4">💀</div>
+              <p className="text-red-200/60 mb-4">No death clips yet!</p>
+              <p className="text-red-200/40 text-sm">Be the first to submit an epic ARPG death</p>
+            </div>
+          ) : null}
         </div>
       </div>
     </div>
