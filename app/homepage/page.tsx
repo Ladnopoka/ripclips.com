@@ -7,11 +7,11 @@ import { useAuthContext } from "@/lib/AuthContext";
 const mockClips = [
   {
     id: 1,
-    title: "💀 Epic Hardcore Death - Shaper Slam",
-    game: "Path of Exile",
-    streamer: "Zizaran",
+    title: "LVL 80 RIP CLIP :(",
+    game: "Path of Exile 2",
+    streamer: "LadnoTV",
     embedUrl: "https://clips.twitch.tv/embed?clip=SassyShortPhoneAMPEnergy-D1IfC-epeE5qTM56&parent=localhost",
-    description: "Level 95 hardcore character gets destroyed by Shaper slam. RIP 200+ hours of gameplay.",
+    description: "Level 80 Character gets owned by volatiles",
     timestamp: "2 hours ago",
     likes: 156,
     views: "2.3K"
