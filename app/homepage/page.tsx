@@ -1,119 +1,144 @@
 "use client";
 
-import Link from "next/link";
+import { useState } from "react";
+import { useAuthContext } from "@/lib/AuthContext";
+
+// Mock clip data - will eventually come from database
+const mockClips = [
+  {
+    id: 1,
+    title: "💀 Epic Hardcore Death - Shaper Slam",
+    game: "Path of Exile",
+    streamer: "Zizaran",
+    embedUrl: "https://clips.twitch.tv/embed?clip=SassyShortPhoneAMPEnergy-D1IfC-epeE5qTM56&parent=localhost",
+    description: "Level 95 hardcore character gets destroyed by Shaper slam. RIP 200+ hours of gameplay.",
+    timestamp: "2 hours ago",
+    likes: 156,
+    views: "2.3K"
+  },
+  // More clips will be added from database
+];
+
+interface ClipCardProps {
+  clip: typeof mockClips[0];
+}
+
+const ClipCard: React.FC<ClipCardProps> = ({ clip }) => {
+  const [liked, setLiked] = useState(false);
+  const { user } = useAuthContext();
+
+  return (
+    <div className="bg-gradient-to-b from-gray-900 to-red-950/30 rounded-xl border border-red-900/50 overflow-hidden shadow-2xl mb-6">
+      {/* Clip Header */}
+      <div className="p-4 border-b border-red-900/30">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 bg-gradient-to-br from-red-600 to-red-800 rounded-full flex items-center justify-center text-white text-sm font-medium">
+              {clip.streamer[0].toUpperCase()}
+            </div>
+            <div>
+              <h3 className="text-red-300 font-medium">{clip.streamer}</h3>
+              <p className="text-red-200/60 text-sm">{clip.timestamp}</p>
+            </div>
+          </div>
+          <div className="text-red-400 text-sm font-medium">{clip.game}</div>
+        </div>
+        <h2 className="text-lg font-bold text-white mb-2">{clip.title}</h2>
+      </div>
+
+      {/* Embedded Video */}
+      <div className="relative bg-black">
+        <iframe 
+          src={clip.embedUrl}
+          frameBorder="0" 
+          allowFullScreen 
+          scrolling="no" 
+          height="378" 
+          width="100%"
+          className="w-full"
+          title={clip.title}
+        />
+      </div>
+
+      {/* Clip Footer */}
+      <div className="p-4">
+        <p className="text-red-200/70 mb-4">{clip.description}</p>
+        
+        {/* Actions */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={() => user && setLiked(!liked)}
+              className={`flex items-center space-x-2 transition-colors ${
+                liked 
+                  ? 'text-red-400' 
+                  : 'text-red-200/60 hover:text-red-400'
+              } ${!user && 'cursor-not-allowed opacity-50'}`}
+              disabled={!user}
+            >
+              <svg className="w-5 h-5" fill={liked ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+              <span>{liked ? clip.likes + 1 : clip.likes}</span>
+            </button>
+            
+            <button className="flex items-center space-x-2 text-red-200/60 hover:text-red-400 transition-colors">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.955 8.955 0 01-2.622-.389l-3.378 2.032 1.179-3.537A8 8 0 113 12z" />
+              </svg>
+              <span>42</span>
+            </button>
+
+            <button className="flex items-center space-x-2 text-red-200/60 hover:text-red-400 transition-colors">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+              </svg>
+              <span>Share</span>
+            </button>
+          </div>
+          
+          <div className="text-red-200/60 text-sm">{clip.views} views</div>
+        </div>
+
+        {/* Login prompt for non-authenticated users */}
+        {!user && (
+          <div className="mt-4 p-3 bg-red-950/30 rounded-lg border border-red-800/50">
+            <p className="text-red-300 text-sm">
+              💀 <a href="/login" className="text-red-400 hover:underline">Log in</a> or <a href="/register" className="text-red-400 hover:underline">join</a> to like and comment on death clips
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
 
 export default function Homepage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-red-950">
-      {/* Hero Section */}
-      <section className="py-20 px-4">
-        <div className="max-w-6xl mx-auto text-center">
-          <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 drop-shadow-2xl">
-            Witness the 
-            <span className="text-red-500 drop-shadow-lg"> CARNAGE</span> ⚔️
-          </h1>
-          <p className="text-xl text-red-200 mb-8 max-w-3xl mx-auto drop-shadow-lg">
-            💀 Experience the most brutal hardcore deaths, legendary boss kills, and epic fails 
-            from Path of Exile, Last Epoch, and Diablo. Watch streamers meet their doom in glorious detail.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link 
-              href="/register"
-              className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-8 py-3 rounded-lg text-lg font-medium transition-all shadow-xl border border-red-800"
-            >
-              💀 Join the Slaughter
-            </Link>
-            <Link 
-              href="/clips"
-              className="border-2 border-red-600 text-red-400 hover:bg-red-600 hover:text-white px-8 py-3 rounded-lg text-lg font-medium transition-all shadow-xl"
-            >
-              🩸 Watch Deaths
-            </Link>
-          </div>
+    <div className="min-h-screen bg-black">
+      {/* Feed Container */}
+      <div className="max-w-2xl mx-auto px-4 py-6">
+        {/* Feed Header */}
+        <div className="mb-6 text-center">
+          <h1 className="text-2xl font-bold text-red-500 mb-2">💀 Death Feed</h1>
+          <p className="text-red-200/70">Witness the latest ARPG carnage</p>
         </div>
-      </section>
 
-      {/* Featured Games Section */}
-      <section className="py-16 px-4 bg-gradient-to-r from-red-950/50 to-black/80">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-white text-center mb-12 drop-shadow-lg">
-            ⚰️ Death Arenas ⚰️
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-gradient-to-b from-gray-900 to-red-950/50 p-6 rounded-xl text-center border border-red-900/50 shadow-2xl">
-              <div className="w-16 h-16 bg-gradient-to-br from-orange-600 to-red-700 rounded-full mx-auto mb-4 shadow-lg border-2 border-red-800"></div>
-              <h3 className="text-xl font-semibold text-red-300 mb-2">Path of Exile</h3>
-              <p className="text-red-200/70">💀 Brutal boss encounters, build failures, and hardcore devastation</p>
-            </div>
-            <div className="bg-gradient-to-b from-gray-900 to-red-950/50 p-6 rounded-xl text-center border border-red-900/50 shadow-2xl">
-              <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-red-700 rounded-full mx-auto mb-4 shadow-lg border-2 border-red-800"></div>
-              <h3 className="text-xl font-semibold text-red-300 mb-2">Last Epoch</h3>
-              <p className="text-red-200/70">⚔️ Time-twisted deaths and legendary character losses</p>
-            </div>
-            <div className="bg-gradient-to-b from-gray-900 to-red-950/50 p-6 rounded-xl text-center border border-red-900/50 shadow-2xl">
-              <div className="w-16 h-16 bg-gradient-to-br from-red-600 to-red-800 rounded-full mx-auto mb-4 shadow-lg border-2 border-red-900"></div>
-              <h3 className="text-xl font-semibold text-red-300 mb-2">Diablo Series</h3>
-              <p className="text-red-200/70">🔥 Demonic executions and treasure hunt disasters</p>
+        {/* Clip Feed */}
+        <div className="space-y-6">
+          {mockClips.map((clip) => (
+            <ClipCard key={clip.id} clip={clip} />
+          ))}
+          
+          {/* Loading placeholder for more clips */}
+          <div className="bg-gradient-to-b from-gray-900 to-red-950/30 rounded-xl border border-red-900/50 p-8 text-center">
+            <div className="animate-pulse">
+              <div className="w-16 h-16 bg-red-900/50 rounded-full mx-auto mb-4"></div>
+              <p className="text-red-200/60">Loading more deaths...</p>
             </div>
           </div>
         </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="py-16 px-4 bg-black">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-white text-center mb-12 drop-shadow-lg">
-            🩸 Why Join the Bloodbath? 🩸
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-12 h-12 bg-gradient-to-r from-red-600 to-red-800 rounded-lg mx-auto mb-4 flex items-center justify-center shadow-lg border border-red-900">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-red-300 mb-2">💀 Easy Submission</h3>
-              <p className="text-red-200/70">Submit brutal Twitch clips and YouTube deaths with ease</p>
-            </div>
-            <div className="text-center">
-              <div className="w-12 h-12 bg-gradient-to-r from-red-600 to-red-800 rounded-lg mx-auto mb-4 flex items-center justify-center shadow-lg border border-red-900">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-red-300 mb-2">⚔️ Death Community</h3>
-              <p className="text-red-200/70">Join fellow death-watchers and share in the carnage</p>
-            </div>
-            <div className="text-center">
-              <div className="w-12 h-12 bg-gradient-to-r from-red-600 to-red-800 rounded-lg mx-auto mb-4 flex items-center justify-center shadow-lg border border-red-900">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-red-300 mb-2">🔥 Legendary Deaths</h3>
-              <p className="text-red-200/70">Witness the most spectacular character annihilations</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-16 px-4 bg-gradient-to-r from-red-950 via-black to-red-950">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-bold text-white mb-4 drop-shadow-lg">
-            ⚰️ Ready to Witness the Carnage? ⚰️
-          </h2>
-          <p className="text-red-200 mb-8 text-lg drop-shadow-lg">
-            💀 Join thousands of death-seekers watching the most brutal ARPG moments ever recorded.
-          </p>
-          <Link 
-            href="/register"
-            className="bg-gradient-to-r from-red-700 to-red-800 hover:from-red-800 hover:to-red-900 text-white px-8 py-3 rounded-lg text-lg font-medium transition-all shadow-2xl border border-red-900"
-          >
-            🩸 Enter the Arena
-          </Link>
-        </div>
-      </section>
+      </div>
     </div>
   );
 }

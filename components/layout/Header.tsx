@@ -54,8 +54,8 @@ export const Header: React.FC = () => {
             </Link>
             
             <nav className="hidden md:flex items-center space-x-6">
-              <Link href="/" className="text-red-200 hover:text-red-400 transition-colors font-medium">
-                Home
+              <Link href="/about" className="text-red-200 hover:text-red-400 transition-colors font-medium">
+                About
               </Link>
               <Link href="/clips" className="text-red-200 hover:text-red-400 transition-colors font-medium">
                 Browse Clips
