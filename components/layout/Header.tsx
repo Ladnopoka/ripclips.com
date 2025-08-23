@@ -123,7 +123,7 @@ export const Header: React.FC = () => {
                         Settings
                       </Link>
                       {/* Show admin link for admin users */}
-                      {user && ['admin@ripclips.com', 'moderator@ripclips.com'].includes(user.email || '') && (
+                      {user && ['ladnopokaa@gmail.com', 'ivanovworkbusiness@gmail.com'].includes(user.email || '') && (
                         <Link 
                           href="/admin"
                           className="block px-4 py-2 text-sm text-yellow-400 hover:bg-red-900/50 hover:text-yellow-300 transition-colors border-t border-red-800"
