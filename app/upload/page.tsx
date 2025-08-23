@@ -9,7 +9,7 @@ import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { SuccessMessage } from "@/components/ui/SuccessMessage";
 
 export default function SubmitClipPage() {
-  const { user, loading } = useAuthContext();
+  const { user } = useAuthContext();
   const router = useRouter();
   const [clipUrl, setClipUrl] = useState("");
   const [title, setTitle] = useState("");
@@ -19,12 +19,6 @@ export default function SubmitClipPage() {
   const [errors, setErrors] = useState<string[]>([]);
   const [successMessage, setSuccessMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push("/login");
-    }
-  }, [user, loading, router]);
 
   const validateClipUrl = (url: string) => {
     const twitchClipRegex = /^https:\/\/(?:clips\.twitch\.tv|www\.twitch\.tv\/\w+\/clip)\/[\w-]+/;
@@ -51,8 +45,21 @@ export default function SubmitClipPage() {
 
     setIsSubmitting(true);
     try {
-      // TODO: Submit to database
-      setSuccessMessage("Clip submitted successfully! It will be reviewed before appearing on the site.");
+      // TODO: Submit to database (no authentication required)
+      // Include submitter info if user is logged in, otherwise submit as anonymous
+      const submissionData = {
+        clipUrl,
+        title,
+        game,
+        description,
+        streamer,
+        submittedBy: user ? user.displayName : "Anonymous",
+        submittedAt: new Date().toISOString()
+      };
+      
+      console.log("Submitting clip:", submissionData);
+      
+      setSuccessMessage("💀 Death clip submitted successfully! It will be reviewed before appearing in the feed.");
       
       // Reset form
       setClipUrl("");
@@ -67,17 +74,7 @@ export default function SubmitClipPage() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center bg-gradient-to-b from-black to-red-950">
-        <LoadingSpinner size="lg" />
-      </div>
-    );
-  }
-
-  if (!user) {
-    return null;
-  }
+  // Page is now accessible to all users
 
   return (
     <div className="min-h-[calc(100vh-4rem)] py-8 bg-gradient-to-b from-black via-red-950/20 to-black">
@@ -86,6 +83,33 @@ export default function SubmitClipPage() {
         <p className="text-xl text-red-200 mb-8">
           🩸 Share brutal ARPG deaths from Twitch clips or YouTube videos
         </p>
+
+        {/* Authentication Status */}
+        {!user && (
+          <div className="mb-6 p-4 bg-red-950/30 rounded-lg border border-red-800/50">
+            <div className="flex items-center space-x-2">
+              <svg className="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p className="text-red-300">
+                💀 You can submit clips anonymously! <a href="/login" className="text-red-400 hover:underline">Log in</a> or <a href="/register" className="text-red-400 hover:underline">register</a> to get credit and interact with clips (vote, comment).
+              </p>
+            </div>
+          </div>
+        )}
+        
+        {user && (
+          <div className="mb-6 p-4 bg-green-950/30 rounded-lg border border-green-800/50">
+            <div className="flex items-center space-x-2">
+              <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p className="text-green-300">
+                🩸 Submitting as <strong>{user.displayName}</strong> - you&apos;ll get credit for this death clip!
+              </p>
+            </div>
+          </div>
+        )}
         
         <div className="bg-gradient-to-b from-gray-900 to-red-950/30 p-8 rounded-xl border border-red-900/50 shadow-2xl">
           <div className="space-y-6">

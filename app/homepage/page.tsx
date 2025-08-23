@@ -104,7 +104,7 @@ const ClipCard: React.FC<ClipCardProps> = ({ clip }) => {
         {!user && (
           <div className="mt-4 p-3 bg-red-950/30 rounded-lg border border-red-800/50">
             <p className="text-red-300 text-sm">
-              💀 <a href="/login" className="text-red-400 hover:underline">Log in</a> or <a href="/register" className="text-red-400 hover:underline">join</a> to like and comment on death clips
+              💀 <a href="/login" className="text-red-400 hover:underline">Log in</a> or <a href="/register" className="text-red-400 hover:underline">join</a> to vote and comment on death clips
             </p>
           </div>
         )}

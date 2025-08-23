@@ -44,13 +44,12 @@ export const Header: React.FC = () => {
 
   return (
     <header className="bg-black border-b border-red-900 sticky top-0 z-50 shadow-lg shadow-red-900/20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="px-4 sm:px-4 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo and Navigation */}
           <div className="flex items-center space-x-8">
             <Link href="/" className="flex items-center space-x-2">
-              <div className="text-2xl font-bold text-red-500 drop-shadow-lg">💀 RipClips</div>
-              <div className="text-sm text-red-300 hidden sm:block">Death & Glory</div>
+              <div className="text-2xl font-bold text-red-500 drop-shadow-lg whitespace-nowrap">🩸RIP Clips🩸</div>
             </Link>
             
             <nav className="hidden md:flex items-center space-x-6">
@@ -60,14 +59,22 @@ export const Header: React.FC = () => {
               <Link href="/clips" className="text-red-200 hover:text-red-400 transition-colors font-medium">
                 Browse Clips
               </Link>
-              <Link href="/upload" className="text-red-200 hover:text-red-400 transition-colors font-medium">
-                Submit Clip
-              </Link>
             </nav>
           </div>
 
           {/* Auth Section */}
           <div className="flex items-center space-x-4">
+            {/* Submit Clip Button - Always visible like Reddit's + Create */}
+            <Link 
+              href="/upload"
+              className="flex items-center space-x-1 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-3 py-2 rounded-md text-sm font-medium transition-all shadow-lg border border-red-800"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              <span className="hidden sm:inline">Submit</span>
+            </Link>
+
             {loading ? (
               <LoadingSpinner size="sm" />
             ) : user ? (
@@ -127,19 +134,13 @@ export const Header: React.FC = () => {
                 )}
               </div>
             ) : (
-              /* Not logged in - show login/register buttons */
-              <div className="flex items-center space-x-3">
+              /* Not logged in - show login button */
+              <div className="flex items-center space-x-3 whitespace-nowrap">
                 <Link 
                   href="/login"
                   className="text-red-200 hover:text-red-400 transition-colors font-medium"
                 >
                   Log In
-                </Link>
-                <Link 
-                  href="/register"
-                  className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-4 py-2 rounded-md text-sm font-medium transition-all shadow-lg border border-red-800"
-                >
-                  💀 Join
                 </Link>
               </div>
             )}

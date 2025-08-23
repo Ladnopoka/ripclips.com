@@ -9,25 +9,37 @@ export default function AboutPage() {
       <section className="py-20 px-4">
         <div className="max-w-6xl mx-auto text-center">
           <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 drop-shadow-2xl">
-            Witness the 
-            <span className="text-red-500 drop-shadow-lg"> CARNAGE</span> ⚔️
+            ARPG Hardcore
+            <span className="text-red-500 drop-shadow-lg"> HUB</span>
           </h1>
           <p className="text-xl text-red-200 mb-8 max-w-3xl mx-auto drop-shadow-lg">
-            💀 Experience the most brutal hardcore deaths, legendary boss kills, and epic fails 
-            from Path of Exile, Last Epoch, and Diablo. Watch streamers meet their doom in glorious detail.
+            Welcome to the Hardcore RIP Clips website. Watch the most recent misfortunes of your favourite streamers, and also upload your clips for others amusement and joy. 
           </p>
+
+          <div className="flex justify-center mb-8">
+            <picture>
+              <source srcSet="/alkLFG-4x.avif" type="image/avif" />
+              <source srcSet="/alkLFG-4x.webp" type="image/webp" />
+              <img
+                src="/alkLFG-4x.gif"
+                alt="alkLFG"
+                className="rounded-lg shadow-lg max-h-[400px] w-auto"
+              />
+            </picture>
+          </div>          
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link 
               href="/register"
               className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-8 py-3 rounded-lg text-lg font-medium transition-all shadow-xl border border-red-800"
             >
-              💀 Join the Slaughter
+              Register Now
             </Link>
             <Link 
               href="/clips"
               className="border-2 border-red-600 text-red-400 hover:bg-red-600 hover:text-white px-8 py-3 rounded-lg text-lg font-medium transition-all shadow-xl"
             >
-              🩸 Watch Deaths
+              Watch RIP Clips
             </Link>
           </div>
         </div>

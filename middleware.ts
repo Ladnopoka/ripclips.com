@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 // Routes that require authentication
-const protectedRoutes = ['/dashboard', '/profile', '/settings', '/upload'];
+const protectedRoutes = ['/dashboard', '/profile', '/settings'];
 
 // Routes that should redirect authenticated users (login/register pages)
 const authRoutes = ['/login', '/register'];
