@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { useAuthContext } from "@/lib/AuthContext";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { SuccessMessage } from "@/components/ui/SuccessMessage";
+import { submitClip } from "@/lib/database";
 
 export default function SubmitClipPage() {
   const { user } = useAuthContext();
@@ -45,21 +45,23 @@ export default function SubmitClipPage() {
 
     setIsSubmitting(true);
     try {
-      // TODO: Submit to database (no authentication required)
-      // Include submitter info if user is logged in, otherwise submit as anonymous
+      // Submit to database
       const submissionData = {
         clipUrl,
         title,
         game,
         description,
         streamer,
-        submittedBy: user ? user.displayName : "Anonymous",
-        submittedAt: new Date().toISOString()
+        submittedBy: user ? user.displayName || "Unknown User" : "Anonymous"
       };
       
-      console.log("Submitting clip:", submissionData);
+      const clipId = await submitClip(submissionData);
+      console.log("Clip submitted with ID:", clipId);
       
-      setSuccessMessage("💀 Death clip submitted successfully! It will be reviewed before appearing in the feed.");
+      setSuccessMessage(
+        `💀 Death clip submitted successfully! Your submission has been added to the review queue. ` +
+        `${user ? "You'll be credited as the submitter once approved." : "Consider registering to get credit for your submissions!"}`
+      );
       
       // Reset form
       setClipUrl("");
@@ -67,8 +69,9 @@ export default function SubmitClipPage() {
       setGame("");
       setDescription("");
       setStreamer("");
-    } catch {
-      setErrors(["Failed to submit clip. Please try again."]);
+    } catch (error) {
+      console.error("Submission error:", error);
+      setErrors(["Failed to submit clip to database. Please try again."]);
     } finally {
       setIsSubmitting(false);
     }

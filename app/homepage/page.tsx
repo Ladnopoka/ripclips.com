@@ -1,31 +1,78 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuthContext } from "@/lib/AuthContext";
+import { getApprovedClips, hasUserLikedClip, likeClip, unlikeClip, incrementViews, type ClipSubmission } from "@/lib/database";
 
-// Mock clip data - will eventually come from database
-const mockClips = [
-  {
-    id: 1,
-    title: "LVL 80 RIP CLIP :(",
-    game: "Path of Exile 2",
-    streamer: "LadnoTV",
-    embedUrl: "https://clips.twitch.tv/embed?clip=SassyShortPhoneAMPEnergy-D1IfC-epeE5qTM56&parent=localhost",
-    description: "Level 80 Character gets owned by volatiles",
-    timestamp: "2 hours ago",
-    likes: 156,
-    views: "2.3K"
-  },
-  // More clips will be added from database
-];
+// Helper function to format Twitch embed URL
+const formatEmbedUrl = (clipUrl: string): string => {
+  if (clipUrl.includes('clips.twitch.tv/embed')) {
+    return clipUrl;
+  }
+  
+  if (clipUrl.includes('clips.twitch.tv/')) {
+    const clipId = clipUrl.split('/').pop();
+    return `https://clips.twitch.tv/embed?clip=${clipId}&parent=localhost`;
+  }
+  
+  return clipUrl;
+};
+
+// Helper function to format timestamp
+const formatTimestamp = (timestamp: any): string => {
+  if (!timestamp || !timestamp.toDate) return "Recently";
+  
+  const now = new Date();
+  const clipDate = timestamp.toDate();
+  const diffMs = now.getTime() - clipDate.getTime();
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffDays = Math.floor(diffHours / 24);
+  
+  if (diffHours < 1) return "Just now";
+  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffDays < 7) return `${diffDays}d ago`;
+  return clipDate.toLocaleDateString();
+};
 
 interface ClipCardProps {
-  clip: typeof mockClips[0];
+  clip: ClipSubmission & { userHasLiked?: boolean };
+  onLikeChange: (clipId: string, newLikedState: boolean, newLikeCount: number) => void;
 }
 
-const ClipCard: React.FC<ClipCardProps> = ({ clip }) => {
-  const [liked, setLiked] = useState(false);
+const ClipCard: React.FC<ClipCardProps> = ({ clip, onLikeChange }) => {
+  const [liked, setLiked] = useState(clip.userHasLiked || false);
+  const [liking, setLiking] = useState(false);
+  const [viewed, setViewed] = useState(false);
   const { user } = useAuthContext();
+
+  // Track view when video iframe loads
+  useEffect(() => {
+    if (clip.id && !viewed) {
+      incrementViews(clip.id).catch(console.error);
+      setViewed(true);
+    }
+  }, [clip.id, viewed]);
+
+  const handleLike = async () => {
+    if (!user || !clip.id) return;
+    
+    setLiking(true);
+    try {
+      if (liked) {
+        await unlikeClip(clip.id, user.uid);
+        setLiked(false);
+        onLikeChange(clip.id, false, (clip.likes || 0) - 1);
+      } else {
+        await likeClip(clip.id, user.uid);
+        setLiked(true);
+        onLikeChange(clip.id, true, (clip.likes || 0) + 1);
+      }
+    } catch (error) {
+      console.error("Error toggling like:", error);
+    } finally {
+      setLiking(false);
+    }
+  };
 
   return (
     <div className="bg-gradient-to-b from-gray-900 to-red-950/30 rounded-xl border border-red-900/50 overflow-hidden shadow-2xl mb-6">
@@ -38,7 +85,7 @@ const ClipCard: React.FC<ClipCardProps> = ({ clip }) => {
             </div>
             <div>
               <h3 className="text-red-300 font-medium">{clip.streamer}</h3>
-              <p className="text-red-200/60 text-sm">{clip.timestamp}</p>
+              <p className="text-red-200/60 text-sm">{formatTimestamp(clip.submittedAt)}</p>
             </div>
           </div>
           <div className="text-red-400 text-sm font-medium">{clip.game}</div>
@@ -49,7 +96,7 @@ const ClipCard: React.FC<ClipCardProps> = ({ clip }) => {
       {/* Embedded Video */}
       <div className="relative bg-black">
         <iframe 
-          src={clip.embedUrl}
+          src={formatEmbedUrl(clip.clipUrl)}
           frameBorder="0" 
           allowFullScreen 
           scrolling="no" 
@@ -68,25 +115,29 @@ const ClipCard: React.FC<ClipCardProps> = ({ clip }) => {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <button
-              onClick={() => user && setLiked(!liked)}
+              onClick={handleLike}
+              disabled={!user || liking}
               className={`flex items-center space-x-2 transition-colors ${
                 liked 
                   ? 'text-red-400' 
                   : 'text-red-200/60 hover:text-red-400'
-              } ${!user && 'cursor-not-allowed opacity-50'}`}
-              disabled={!user}
+              } ${!user && 'cursor-not-allowed opacity-50'} ${liking && 'opacity-50'}`}
             >
-              <svg className="w-5 h-5" fill={liked ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-              </svg>
-              <span>{liked ? clip.likes + 1 : clip.likes}</span>
+              {liking ? (
+                <div className="w-5 h-5 animate-spin rounded-full border-2 border-red-400 border-t-transparent"></div>
+              ) : (
+                <svg className="w-5 h-5" fill={liked ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+              )}
+              <span>{clip.likes || 0}</span>
             </button>
             
             <button className="flex items-center space-x-2 text-red-200/60 hover:text-red-400 transition-colors">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.955 8.955 0 01-2.622-.389l-3.378 2.032 1.179-3.537A8 8 0 113 12z" />
               </svg>
-              <span>42</span>
+              <span>{clip.comments || 0}</span>
             </button>
 
             <button className="flex items-center space-x-2 text-red-200/60 hover:text-red-400 transition-colors">
