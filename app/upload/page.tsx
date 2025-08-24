@@ -159,10 +159,13 @@ export default function SubmitClipPage() {
               >
                 <option value="">Select death arena</option>
                 <option value="Path of Exile">💀 Path of Exile</option>
+                <option value="Path of Exile 2">🔥 Path of Exile 2</option>
                 <option value="Last Epoch">⚰️ Last Epoch</option>
                 <option value="Diablo 4">🔥 Diablo 4</option>
                 <option value="Diablo 2">🩸 Diablo 2</option>
                 <option value="Diablo 3">⚔️ Diablo 3</option>
+                <option value="Titan Quest 2">⚡ Titan Quest 2</option>
+                <option value="World of Warcraft">🏰 World of Warcraft</option>
                 <option value="Other">🗡️ Other ARPG</option>
               </select>
             </div>

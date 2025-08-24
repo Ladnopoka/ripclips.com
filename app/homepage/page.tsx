@@ -165,7 +165,10 @@ const ClipCard: React.FC<ClipCardProps> = ({ clip, onLikeChange }) => {
 export default function Homepage() {
   const { user } = useAuthContext();
   const [clips, setClips] = useState<ClipSubmission[]>([]);
+  const [filteredClips, setFilteredClips] = useState<ClipSubmission[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedGame, setSelectedGame] = useState<string>("all");
+  const [sortBy, setSortBy] = useState<string>("newest");
 
   useEffect(() => {
     const fetchClips = async () => {
@@ -197,6 +200,55 @@ export default function Homepage() {
     fetchClips();
   }, [user]);
 
+  // Filter and sort clips when filters or clips change
+  useEffect(() => {
+    let filtered = [...clips];
+
+    // Apply game filter
+    if (selectedGame !== "all") {
+      filtered = filtered.filter(clip => 
+        clip.game.toLowerCase() === selectedGame.toLowerCase()
+      );
+    }
+
+    // Apply sorting
+    if (sortBy === "newest") {
+      filtered.sort((a, b) => {
+        const dateA = a.submittedAt?.toDate?.() || new Date(0);
+        const dateB = b.submittedAt?.toDate?.() || new Date(0);
+        return dateB.getTime() - dateA.getTime();
+      });
+    } else if (sortBy === "most-liked") {
+      filtered.sort((a, b) => (b.likes || 0) - (a.likes || 0));
+    } else if (sortBy === "most-viewed") {
+      filtered.sort((a, b) => (b.views || 0) - (a.views || 0));
+    } else if (sortBy === "hot") {
+      // Hot algorithm: combines likes, views, comments with time decay
+      filtered.sort((a, b) => {
+        const calculateHotScore = (clip: ClipSubmission) => {
+          const likes = clip.likes || 0;
+          const views = clip.views || 0;
+          const comments = clip.comments || 0;
+          const submissionDate = clip.submittedAt?.toDate?.() || new Date(0);
+          const now = new Date();
+          const hoursSinceSubmission = (now.getTime() - submissionDate.getTime()) / (1000 * 60 * 60);
+          
+          // Weighted engagement score
+          const engagementScore = (likes * 3) + (comments * 2) + (views * 0.1);
+          
+          // Time decay: clips lose hotness over time
+          const timeFactor = Math.max(0.1, 1 / (1 + hoursSinceSubmission / 24)); // Decay over days
+          
+          return engagementScore * timeFactor;
+        };
+        
+        return calculateHotScore(b) - calculateHotScore(a);
+      });
+    }
+
+    setFilteredClips(filtered);
+  }, [clips, selectedGame, sortBy]);
+
   // Handler for updating like state in the UI
   const handleLikeChange = (clipId: string, newLikedState: boolean, newLikeCount: number) => {
     setClips((prevClips) =>
@@ -211,16 +263,61 @@ export default function Homepage() {
   return (
     <div className="min-h-screen bg-black">
       {/* Feed Container */}
-      <div className="max-w-2xl mx-auto px-4 py-6">
+      <div className="max-w-2xl mx-auto px-2 py-4">
         {/* Feed Header */}
         <div className="mb-6 text-center">
-          <h1 className="text-2xl font-bold text-red-500 mb-2">💀 Death Feed</h1>
-          <p className="text-red-200/70">Witness the latest ARPG carnage</p>
+          <h1 className="text-2xl font-bold text-red-500 mb-4 flex items-center justify-center gap-2">
+            <img src="/nowae-4x.webp" alt="Death" className="w-10 h-10" />
+            RIP Clip Feed
+          </h1>
+          
+          {/* Filter Controls */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-2">
+            {/* Game Filter */}
+            <div className="flex items-center space-x-2">
+              <label className="text-red-200/70 text-sm font-medium">Game:</label>
+              <select
+                value={selectedGame}
+                onChange={(e) => setSelectedGame(e.target.value)}
+                className="bg-black border border-red-600/50 text-red-200 px-3 py-2 rounded-lg text-sm focus:border-red-400 focus:ring-1 focus:ring-red-500 focus:outline-none"
+              >
+                <option value="all">All Games</option>
+                <option value="path of exile">Path of Exile</option>
+                <option value="path of exile 2">Path of Exile 2</option>
+                <option value="last epoch">Last Epoch</option>
+                <option value="diablo 4">Diablo 4</option>
+                <option value="diablo 2">Diablo 2</option>
+                <option value="titan quest 2">Titan Quest 2</option>
+                <option value="world of warcraft">World of Warcraft</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            {/* Sort Filter */}
+            <div className="flex items-center space-x-2">
+              <label className="text-red-200/70 text-sm font-medium">Sort:</label>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="bg-black border border-red-600/50 text-red-200 px-3 py-2 rounded-lg text-sm focus:border-red-400 focus:ring-1 focus:ring-red-500 focus:outline-none"
+              >
+                <option value="newest">Newest First</option>
+                <option value="hot">🔥 Hot</option>
+                <option value="most-liked">Most Liked</option>
+                <option value="most-viewed">Most Viewed</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Results Summary */}
+          <p className="text-red-200/50 text-sm">
+            {loading ? "Loading..." : `${filteredClips.length} ${filteredClips.length === 1 ? 'death' : 'deaths'} found`}
+          </p>
         </div>
 
         {/* Clip Feed */}
         <div className="space-y-6">
-          {clips.map((clip) => (
+          {filteredClips.map((clip) => (
             <ClipCard key={clip.id} clip={clip} onLikeChange={handleLikeChange} />
           ))}
 
@@ -231,11 +328,20 @@ export default function Homepage() {
                 <p className="text-red-200/60">Loading deaths...</p>
               </div>
             </div>
-          ) : clips.length === 0 ? (
+          ) : filteredClips.length === 0 ? (
             <div className="bg-gradient-to-b from-gray-900 to-red-950/30 rounded-xl border border-red-900/50 p-8 text-center">
               <div className="mb-4">💀</div>
-              <p className="text-red-200/60 mb-4">No death clips yet!</p>
-              <p className="text-red-200/40 text-sm">Be the first to submit an epic ARPG death</p>
+              {clips.length === 0 ? (
+                <>
+                  <p className="text-red-200/60 mb-4">No death clips yet!</p>
+                  <p className="text-red-200/40 text-sm">Be the first to submit an epic ARPG death</p>
+                </>
+              ) : (
+                <>
+                  <p className="text-red-200/60 mb-4">No deaths found for these filters</p>
+                  <p className="text-red-200/40 text-sm">Try adjusting your game or sorting options</p>
+                </>
+              )}
             </div>
           ) : null}
         </div>

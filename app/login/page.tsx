@@ -65,14 +65,30 @@ export default function LoginPage() {
 
     try {
       await resetPassword(resetEmail);
-      setSuccessMessage("Password reset email sent! Check your inbox.");
+      setSuccessMessage("Password reset email sent! Check your inbox and spam folder. If you don't see it in 5-10 minutes, try again.");
       setShowResetForm(false);
       setResetEmail("");
     } catch (error: unknown) {
-      const firebaseError = error as { code?: string };
-      const errorMessage = firebaseError.code === 'auth/user-not-found'
-        ? "No account found with this email address"
-        : "Failed to send reset email. Please try again.";
+      console.error("Password reset error:", error);
+      const firebaseError = error as { code?: string; message?: string };
+      let errorMessage = "Failed to send reset email. Please try again.";
+      
+      switch (firebaseError.code) {
+        case 'auth/user-not-found':
+          errorMessage = "No account found with this email address";
+          break;
+        case 'auth/invalid-email':
+          errorMessage = "Please enter a valid email address";
+          break;
+        case 'auth/too-many-requests':
+          errorMessage = "Too many requests. Please wait a few minutes before trying again.";
+          break;
+        case 'auth/network-request-failed':
+          errorMessage = "Network error. Please check your connection and try again.";
+          break;
+        default:
+          errorMessage = `Error: ${firebaseError.message || 'Unknown error occurred'}`;
+      }
       setErrors([errorMessage]);
     } finally {
       setIsResetting(false);
