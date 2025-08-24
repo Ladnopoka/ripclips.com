@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { User, onAuthStateChanged, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { User, onAuthStateChanged, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "./firebase";
 
 export interface AuthState {
@@ -43,11 +43,16 @@ export const useAuth = () => {
     await signOut(auth);
   };
 
+  const resetPassword = async (email: string) => {
+    await sendPasswordResetEmail(auth, email);
+  };
+
   return {
     user: authState.user,
     loading: authState.loading,
     login,
     register,
     logout,
+    resetPassword,
   };
 };
