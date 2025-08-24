@@ -15,7 +15,9 @@ export const formatEmbedUrl = (clipUrl: string): string => {
   
   if (twitchMatch && twitchMatch[1]) {
     const clipId = twitchMatch[1];
-    return `https://clips.twitch.tv/embed?clip=${clipId}&parent=localhost`;
+    // Use multiple parent domains to handle different environments
+    const currentHost = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
+    return `https://clips.twitch.tv/embed?clip=${clipId}&parent=${currentHost}&parent=localhost&parent=ripclips.com`;
   }
   
   // Extract video ID from YouTube URL formats:

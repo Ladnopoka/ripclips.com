@@ -6,13 +6,18 @@ service cloud.firestore {
     // Allow admins full access
     match /clip_submissions/{clipId} {
       allow read: if resource.data.status == 'approved';
-      allow read, write: if request.auth != null && request.auth.token.admin == true;
+      // Allow specific admin emails to read/write all clips (including pending)
+      allow read, write: if request.auth != null && 
+        request.auth.token.email_verified == true && 
+        (request.auth.token.email == 'ladnopokaa@gmail.com' || 
+         request.auth.token.email == 'ivanovworkbusiness@gmail.com');
       // Allow anyone to increment views (no auth required)
       allow update: if onlyUpdatingFields(['views']);
       // Allow authenticated users to update likes and comments counts
       allow update: if request.auth != null && 
         (onlyUpdatingFields(['likes']) || 
          onlyUpdatingFields(['comments']));
+      allow create: if true; // Allow anyone to create clips
     }
     
     // Allow everyone to read likes, but only authenticated users to create/delete
