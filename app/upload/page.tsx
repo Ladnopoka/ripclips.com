@@ -80,7 +80,7 @@ export default function SubmitClipPage() {
   // Page is now accessible to all users
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] py-8 bg-gradient-to-b from-black via-red-950/20 to-black">
+    <div className="min-h-[calc(100vh-4rem)] py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <h1 className="text-4xl font-bold text-red-500 mb-6 drop-shadow-lg">💀 Submit Death Clip</h1>
         <p className="text-xl text-red-200 mb-8">

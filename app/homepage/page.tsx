@@ -261,7 +261,7 @@ export default function Homepage() {
   };
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen">
       {/* Feed Container */}
       <div className="max-w-2xl mx-auto px-2 py-4">
         {/* Feed Header */}

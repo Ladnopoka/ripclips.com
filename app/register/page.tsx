@@ -50,7 +50,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4 py-8 bg-gradient-to-b from-black via-red-950/20 to-black">
+    <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4 py-8">
       <div className="bg-gradient-to-b from-gray-900 to-red-950/30 p-8 rounded-xl shadow-2xl text-center max-w-md w-full border border-red-900/50">
         <h1 className="text-4xl font-bold text-red-500 mb-6 drop-shadow-lg">
           💀 Join the Arena

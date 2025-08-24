@@ -121,7 +121,7 @@ export default function AdminPage() {
 
   if (authLoading || (!user && !authLoading)) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
+      <div className="min-h-screen flex items-center justify-center">
         <LoadingSpinner size="lg" />
       </div>
     );
@@ -129,7 +129,7 @@ export default function AdminPage() {
 
   if (!isAdmin) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-red-500 mb-4">Access Denied</h1>
           <p className="text-red-200">You don't have permission to access this page.</p>
@@ -139,7 +139,7 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black py-8">
+    <div className="min-h-screen py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-red-500 mb-2">💀 Admin Panel</h1>
