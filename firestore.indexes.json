@@ -1,0 +1,47 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "clip_submissions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "submittedAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "clip_comments",
+      "queryScope": "COLLECTION", 
+      "fields": [
+        {
+          "fieldPath": "clipId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "clip_likes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "clipId", 
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "userId",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
