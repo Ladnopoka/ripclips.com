@@ -22,6 +22,8 @@ export default function SubmitClipPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoadingMetadata, setIsLoadingMetadata] = useState(false);
   const [metadataExtracted, setMetadataExtracted] = useState(false);
+  const [streamerProfileImageUrl, setStreamerProfileImageUrl] = useState("");
+  const [gameBoxArtUrl, setGameBoxArtUrl] = useState("");
 
   const validateClipUrl = (url: string) => {
     const twitchClipRegex = /^https:\/\/(?:clips\.twitch\.tv|www\.twitch\.tv\/\w+\/clip)\/[\w-]+/;
@@ -36,6 +38,8 @@ export default function SubmitClipPage() {
     
     // Reset metadata extracted flag when URL changes
     setMetadataExtracted(false);
+    setStreamerProfileImageUrl("");
+    setGameBoxArtUrl("");
     
     // Check if it's a Twitch clip URL
     const clipId = extractTwitchClipId(url);
@@ -43,10 +47,25 @@ export default function SubmitClipPage() {
       setIsLoadingMetadata(true);
       try {
         const metadata = await fetchTwitchClipMetadata(url);
+        console.log('📥 Frontend received metadata from API:', {
+          streamerProfileImageUrl: metadata?.streamerProfileImageUrl,
+          gameBoxArtUrl: metadata?.gameBoxArtUrl,
+          hasStreamerImage: !!metadata?.streamerProfileImageUrl,
+          hasGameBoxArt: !!metadata?.gameBoxArtUrl
+        });
+        
         if (metadata) {
           setTitle(metadata.title);
           setStreamer(metadata.streamer);
           setGame(metadata.game);
+          setStreamerProfileImageUrl(metadata.streamerProfileImageUrl || "");
+          setGameBoxArtUrl(metadata.gameBoxArtUrl || "");
+          
+          console.log('📝 Frontend state after setting image URLs:', {
+            streamerProfileImageUrl: metadata.streamerProfileImageUrl || "",
+            gameBoxArtUrl: metadata.gameBoxArtUrl || "",
+          });
+          
           setMetadataExtracted(true);
           setSuccessMessage("✨ Clip metadata extracted successfully!");
         } else {
@@ -92,8 +111,17 @@ export default function SubmitClipPage() {
         game,
         description,
         streamer,
-        submittedBy: user ? user.displayName || "Unknown User" : "Anonymous"
+        submittedBy: user ? user.displayName || "Unknown User" : "Anonymous",
+        streamerProfileImageUrl: streamerProfileImageUrl || null,
+        gameBoxArtUrl: gameBoxArtUrl || null
       };
+      
+      console.log('💾 Data being submitted to database:', {
+        streamerProfileImageUrl: submissionData.streamerProfileImageUrl,
+        gameBoxArtUrl: submissionData.gameBoxArtUrl,
+        hasStreamerImage: !!submissionData.streamerProfileImageUrl,
+        hasGameBoxArt: !!submissionData.gameBoxArtUrl
+      });
       
       const clipId = await submitClip(submissionData);
       console.log("Clip submitted with ID:", clipId);

@@ -78,6 +78,8 @@ export const fetchTwitchClipMetadata = async (clipUrl: string): Promise<ClipMeta
       throw new Error('Invalid Twitch clip URL');
     }
 
+    console.log('🌐 Making API call to /api/twitch-metadata with clipId:', clipId);
+
     // Call our API route that handles Twitch API requests
     const response = await fetch('/api/twitch-metadata', {
       method: 'POST',
@@ -87,26 +89,41 @@ export const fetchTwitchClipMetadata = async (clipUrl: string): Promise<ClipMeta
       body: JSON.stringify({ clipId }),
     });
 
+    console.log('🌐 API Response status:', response.status, response.statusText);
+    console.log('🌐 API Response ok:', response.ok);
+
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error('🌐 API Response error text:', errorText);
       throw new Error('Failed to fetch metadata from Twitch API');
     }
 
-    const data = await response.json();
+    const responseText = await response.text();
+    console.log('🌐 Raw API response text:', responseText);
+
+    const data = JSON.parse(responseText);
+    console.log('🌐 Parsed API response data:', data);
     
     if (data.error) {
       throw new Error(data.error);
     }
 
-    return {
+    const metadata: ClipMetadata = {
       title: data.title,
       streamer: data.streamer,
       game: data.game,
       thumbnailUrl: data.thumbnailUrl,
       duration: data.duration,
       createdAt: data.createdAt,
+      streamerProfileImageUrl: data.streamerProfileImageUrl,
+      gameBoxArtUrl: data.gameBoxArtUrl,
     };
+
+    console.log('🌐 Final metadata object being returned to frontend:', metadata);
+    
+    return metadata;
   } catch (error) {
-    console.error('Error fetching Twitch clip metadata:', error);
+    console.error('🌐 Error fetching Twitch clip metadata:', error);
     return null;
   }
 };

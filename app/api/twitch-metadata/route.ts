@@ -124,22 +124,30 @@ export async function POST(request: NextRequest) {
 
     // Get access token
     const token = await getTwitchAccessToken();
+    console.log('Got Twitch access token:', token ? 'SUCCESS' : 'FAILED');
 
     // Fetch clip data
     const clipData = await fetchClipData(clipId, token);
+    console.log('Raw clip data from Twitch API:', JSON.stringify(clipData, null, 2));
     
     // Fetch broadcaster data
     const broadcasterData = await fetchBroadcasterData(clipData.broadcaster_id, token);
+    console.log('Raw broadcaster data from Twitch API:', JSON.stringify(broadcasterData, null, 2));
+    console.log('Broadcaster profile_image_url:', broadcasterData.profile_image_url);
     
     // Fetch game data using game_id from clip
     let gameData = null;
     if (clipData.game_id) {
       try {
         gameData = await fetchGameData(clipData.game_id, token);
+        console.log('Raw game data from Twitch API:', JSON.stringify(gameData, null, 2));
+        console.log('Game box_art_url:', gameData.box_art_url);
       } catch (error) {
-        console.error('Error fetching game data:', error);
+        console.error('Error fetching game data for game_id:', clipData.game_id, error);
         // Continue without game data, will fallback to "Other"
       }
+    } else {
+      console.log('No game_id found in clip data');
     }
 
     // Format game name properly - maps official Twitch names to our standardized names
@@ -180,6 +188,13 @@ export async function POST(request: NextRequest) {
       streamerProfileImageUrl: broadcasterData.profile_image_url,
       gameBoxArtUrl: gameData?.box_art_url,
     };
+
+    console.log('Final metadata being returned:', JSON.stringify({
+      streamerProfileImageUrl: metadata.streamerProfileImageUrl,
+      gameBoxArtUrl: metadata.gameBoxArtUrl,
+      hasStreamerImage: !!metadata.streamerProfileImageUrl,
+      hasGameBoxArt: !!metadata.gameBoxArtUrl
+    }, null, 2));
 
     return NextResponse.json(metadata);
     
