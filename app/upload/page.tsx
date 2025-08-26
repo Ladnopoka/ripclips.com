@@ -82,9 +82,9 @@ export default function SubmitClipPage() {
   return (
     <div className="min-h-[calc(100vh-4rem)] py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-4xl font-bold text-red-500 mb-6 drop-shadow-lg">💀 Submit Death Clip</h1>
+        <h1 className="text-4xl font-bold text-red-500 mb-6 drop-shadow-lg">💀 Submit RIP Clip</h1>
         <p className="text-xl text-red-200 mb-8">
-          🩸 Share brutal ARPG deaths from Twitch clips or YouTube videos
+          Share brutal ARPG RIPs from Twitch or YouTube!
         </p>
 
         {/* Authentication Status */}
@@ -95,7 +95,7 @@ export default function SubmitClipPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <p className="text-red-300">
-                💀 You can submit clips anonymously! <a href="/login" className="text-red-400 hover:underline">Log in</a> or <a href="/register" className="text-red-400 hover:underline">register</a> to get credit and interact with clips (vote, comment).
+                You can submit clips anonymously! <a href="/login" className="text-red-400 hover:underline">Log in</a> or <a href="/register" className="text-red-400 hover:underline">register</a> to get credit and interact with clips (vote, comment).
               </p>
             </div>
           </div>
@@ -108,7 +108,7 @@ export default function SubmitClipPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <p className="text-green-300">
-                🩸 Submitting as <strong>{user.displayName}</strong> - you&apos;ll get credit for this death clip!
+                Submitting as <strong>{user.displayName}</strong> - you&apos;ll get credit for this death clip!
               </p>
             </div>
           </div>
@@ -119,7 +119,7 @@ export default function SubmitClipPage() {
             {/* Clip URL */}
             <div>
               <label className="block text-red-300 text-sm font-medium mb-2">
-                💀 Death Clip URL *
+                Clip URL
               </label>
               <input
                 type="url"
@@ -129,14 +129,14 @@ export default function SubmitClipPage() {
                 className="w-full bg-black border border-red-600 rounded-lg px-4 py-3 text-white focus:border-red-400 focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 shadow-lg"
               />
               <p className="text-red-200/70 text-sm mt-1">
-                🩸 Submit Twitch clips and YouTube deaths
+                Submit Twitch and YouTube clips
               </p>
             </div>
 
             {/* Title */}
             <div>
               <label className="block text-red-300 text-sm font-medium mb-2">
-                ⚔️ Death Title *
+                Title
               </label>
               <input
                 type="text"
@@ -150,30 +150,30 @@ export default function SubmitClipPage() {
             {/* Game */}
             <div>
               <label className="block text-red-300 text-sm font-medium mb-2">
-                🔥 Death Arena *
+                Game
               </label>
               <select
                 value={game}
                 onChange={(e) => setGame(e.target.value)}
                 className="w-full bg-black border border-red-600 rounded-lg px-4 py-3 text-white focus:border-red-400 focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 shadow-lg"
               >
-                <option value="">Select death arena</option>
+                <option value="">Select Game</option>
                 <option value="Path of Exile">💀 Path of Exile</option>
                 <option value="Path of Exile 2">🔥 Path of Exile 2</option>
                 <option value="Last Epoch">⚰️ Last Epoch</option>
                 <option value="Diablo 4">🔥 Diablo 4</option>
-                <option value="Diablo 2">🩸 Diablo 2</option>
-                <option value="Diablo 3">⚔️ Diablo 3</option>
+                <option value="Diablo 2">🩸 Diablo 3</option>
+                <option value="Diablo 3">⚔️ Diablo 2</option>
                 <option value="Titan Quest 2">⚡ Titan Quest 2</option>
                 <option value="World of Warcraft">🏰 World of Warcraft</option>
-                <option value="Other">🗡️ Other ARPG</option>
+                <option value="Other">🗡️ Other Games</option>
               </select>
             </div>
 
             {/* Streamer */}
             <div>
               <label className="block text-red-300 text-sm font-medium mb-2">
-                👤 Victim/Streamer *
+                Who RIP'd?
               </label>
               <input
                 type="text"
@@ -187,7 +187,7 @@ export default function SubmitClipPage() {
             {/* Description */}
             <div>
               <label className="block text-red-300 text-sm font-medium mb-2">
-                📖 Death Story (Optional)
+                RIP Description (Optional)
               </label>
               <textarea
                 placeholder="Describe the carnage... What led to this epic death? Build details, boss mechanics, etc."
@@ -206,14 +206,14 @@ export default function SubmitClipPage() {
               disabled={isSubmitting}
               className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-medium transition-all flex items-center justify-center shadow-xl border border-red-800"
             >
-              {isSubmitting ? <LoadingSpinner size="sm" /> : "🩸 Submit Death"}
+              {isSubmitting ? <LoadingSpinner size="sm" /> : "🩸 Submit RIP Clip"}
             </button>
           </div>
         </div>
 
         {/* Examples */}
         <div className="mt-8 bg-gradient-to-b from-gray-900 to-red-950/30 p-6 rounded-xl border border-red-900/50 shadow-2xl">
-          <h3 className="text-lg font-semibold text-red-300 mb-4">💀 Example Death URLs:</h3>
+          <h3 className="text-lg font-semibold text-red-300 mb-4">Example RIP URLs:</h3>
           <div className="space-y-2 text-sm">
             <div className="text-red-200/70">
               <strong className="text-red-400">Twitch Clip:</strong> https://clips.twitch.tv/BraveHelpfulDolphinCoolStoryBob

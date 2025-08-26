@@ -49,7 +49,7 @@ export default function AboutPage() {
       <section className="py-16 px-4 bg-gradient-to-r from-red-950/50 to-black/80">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-white text-center mb-12 drop-shadow-lg">
-            ⚰️ Death Arenas ⚰️
+            Games
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="bg-gradient-to-b from-gray-900 to-red-950/50 p-6 rounded-xl text-center border border-red-900/50 shadow-2xl">
@@ -75,7 +75,7 @@ export default function AboutPage() {
       <section className="py-16 px-4 bg-black">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-white text-center mb-12 drop-shadow-lg">
-            🩸 Why Join the Bloodbath? 🩸
+            🩸 Why Join RIP Clips? 🩸
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="text-center">
@@ -85,7 +85,7 @@ export default function AboutPage() {
                 </svg>
               </div>
               <h3 className="text-xl font-semibold text-red-300 mb-2">💀 Easy Submission</h3>
-              <p className="text-red-200/70">Submit brutal Twitch clips and YouTube deaths with ease</p>
+              <p className="text-red-200/70">Submit brutal Twitch and YouTube RIP clips with ease</p>
             </div>
             <div className="text-center">
               <div className="w-12 h-12 bg-gradient-to-r from-red-600 to-red-800 rounded-lg mx-auto mb-4 flex items-center justify-center shadow-lg border border-red-900">
@@ -93,8 +93,9 @@ export default function AboutPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-red-300 mb-2">⚔️ Death Community</h3>
-              <p className="text-red-200/70">Join fellow death-watchers and share in the carnage</p>
+              <h3 className="text-xl font-semibold text-red-300 mb-2">⚔️ RIP Community</h3>
+              <p className="text-red-200/70">Join```
+              <p className="text-red-200/70">Join fellow RIP enthusiasts and share in the excitement</p>
             </div>
             <div className="text-center">
               <div className="w-12 h-12 bg-gradient-to-r from-red-600 to-red-800 rounded-lg mx-auto mb-4 flex items-center justify-center shadow-lg border border-red-900">
@@ -102,7 +103,7 @@ export default function AboutPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-red-300 mb-2">🔥 Legendary Deaths</h3>
+              <h3 className="text-xl font-semibold text-red-300 mb-2">🔥 Legendary RIPs</h3>
               <p className="text-red-200/70">Witness the most spectacular character annihilations</p>
             </div>
           </div>
@@ -113,16 +114,16 @@ export default function AboutPage() {
       <section className="py-16 px-4 bg-gradient-to-r from-red-950 via-black to-red-950">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl font-bold text-white mb-4 drop-shadow-lg">
-            ⚰️ Ready to Witness the Carnage? ⚰️
+            Ready to witness the Misery of others?
           </h2>
           <p className="text-red-200 mb-8 text-lg drop-shadow-lg">
-            💀 Join thousands of death-seekers watching the most brutal ARPG moments ever recorded.
+            Join thousands of RIP-seekers watching the most brutal ARPG moments ever recorded.
           </p>
           <Link 
             href="/register"
             className="bg-gradient-to-r from-red-700 to-red-800 hover:from-red-800 hover:to-red-900 text-white px-8 py-3 rounded-lg text-lg font-medium transition-all shadow-2xl border border-red-900"
           >
-            🩸 Enter the Arena
+            Join RIP clips
           </Link>
         </div>
       </section>
