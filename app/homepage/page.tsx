@@ -289,7 +289,7 @@ export default function Homepage() {
       <div className="max-w-2xl mx-auto px-2 py-4">
         {/* Feed Header */}
         <div className="mb-1 text-center">
-          <h1 className="text-2xl font-bold text-red-500 mb-4 flex items-center justify-center gap-2">
+          <h1 className="text-2xl font-bold text-red-500 mb-3 flex items-center justify-center gap-2">
             <img src="/nowae-4x.webp" alt="Death" className="w-10 h-10" />
             RIP Clip Feed
           </h1>
