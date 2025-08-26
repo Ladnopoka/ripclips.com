@@ -65,8 +65,8 @@ const ClipCard: React.FC<ClipCardProps> = ({ clip, onLikeChange, isPlaying, onPl
     <div className="bg-gray-900 rounded-lg border border-red-900/30 overflow-hidden mb-3">
       {/* Clip Header - Single Compact Line */}
       <div className="p-3">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center space-x-2 flex-1">
+        <div className="relative flex items-center w-full">
+          <div className="flex items-center space-x-2 flex-shrink-0">
             <div className="w-6 h-6 bg-gradient-to-br from-red-600 to-red-800 rounded-full flex items-center justify-center text-white text-xs font-medium">
               {clip.streamer[0].toUpperCase()}
             </div>
@@ -74,9 +74,10 @@ const ClipCard: React.FC<ClipCardProps> = ({ clip, onLikeChange, isPlaying, onPl
             <span className="text-red-200/40 text-xs">•</span>
             <span className="text-red-200/60 text-xs">{formatTimestamp(clip.submittedAt)}</span>
           </div>
-          <span className="text-red-400 text-xs font-medium ml-auto">{clip.game}</span>
+          <h2 className="absolute left-1/2 transform -translate-x-1/2 text-2xl font-bold text-red-500 hidden sm:block">{clip.title}</h2>
+          <span className="text-red-400 text-xs font-medium flex-shrink-0 hidden sm:inline ml-auto">{clip.game}</span>
         </div>
-        <h2 className="text-red-500 font-bold text-2xl leading-tight text-center tracking-wide" style={{ fontFamily: 'serif'}}>{clip.title}</h2>
+        <h2 className="text-2xl font-bold text-red-500 text-center sm:hidden">{clip.title}</h2>
       </div>
 
       {/* Embedded Video */}
@@ -287,7 +288,7 @@ export default function Homepage() {
       {/* Feed Container */}
       <div className="max-w-2xl mx-auto px-2 py-4">
         {/* Feed Header */}
-        <div className="mb-6 text-center">
+        <div className="mb-1 text-center">
           <h1 className="text-2xl font-bold text-red-500 mb-4 flex items-center justify-center gap-2">
             <img src="/nowae-4x.webp" alt="Death" className="w-10 h-10" />
             RIP Clip Feed
@@ -323,10 +324,10 @@ export default function Homepage() {
                 onChange={(e) => setSortBy(e.target.value)}
                 className="bg-black border border-red-600/50 text-red-200 px-3 py-2 rounded-lg text-sm focus:border-red-400 focus:ring-1 focus:ring-red-500 focus:outline-none"
               >
-                <option value="newest">Newest First</option>
-                <option value="hot">🔥 Hot</option>
-                <option value="most-liked">Most Liked</option>
-                <option value="most-viewed">Most Viewed</option>
+                <option value="newest">Newest</option>
+                <option value="hot">Hot</option>
+                <option value="most-liked">Likes</option>
+                <option value="most-viewed">Views</option>
               </select>
             </div>
           </div>
@@ -353,7 +354,7 @@ export default function Homepage() {
             <div className="bg-gray-900 rounded-lg border border-red-900/30 p-6 text-center">
               <div className="animate-pulse">
                 <div className="w-12 h-12 bg-red-900/50 rounded-full mx-auto mb-3"></div>
-                <p className="text-red-200/60 text-sm">Loading deaths...</p>
+                <p className="text-red-200/60 text-sm">Loading RIPs...</p>
               </div>
             </div>
           ) : filteredClips.length === 0 ? (
@@ -361,12 +362,12 @@ export default function Homepage() {
               <div className="mb-4">💀</div>
               {clips.length === 0 ? (
                 <>
-                  <p className="text-red-200/60 mb-3 text-sm">No death clips yet!</p>
-                  <p className="text-red-200/40 text-xs">Be the first to submit an epic ARPG death</p>
+                  <p className="text-red-200/60 mb-3 text-sm">No RIPs yet!</p>
+                  <p className="text-red-200/40 text-xs">Be the first to submit an epic ARPG RIP</p>
                 </>
               ) : (
                 <>
-                  <p className="text-red-200/60 mb-3 text-sm">No deaths found for these filters</p>
+                  <p className="text-red-200/60 mb-3 text-sm">No RIPs found for these filters</p>
                   <p className="text-red-200/40 text-xs">Try adjusting your game or sorting options</p>
                 </>
               )}
