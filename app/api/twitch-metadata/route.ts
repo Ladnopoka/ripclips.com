@@ -92,6 +92,28 @@ async function fetchBroadcasterData(broadcasterId: string, token: string) {
   return data.data[0];
 }
 
+// Fetch game data from Twitch API using game_id
+async function fetchGameData(gameId: string, token: string) {
+  const response = await fetch(`https://api.twitch.tv/helix/games?id=${gameId}`, {
+    headers: {
+      'Client-ID': TWITCH_CLIENT_ID!,
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch game data from Twitch');
+  }
+
+  const data = await response.json();
+  
+  if (!data.data || data.data.length === 0) {
+    throw new Error('Game not found');
+  }
+
+  return data.data[0];
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { clipId } = await request.json();
@@ -108,21 +130,38 @@ export async function POST(request: NextRequest) {
     
     // Fetch broadcaster data
     const broadcasterData = await fetchBroadcasterData(clipData.broadcaster_id, token);
+    
+    // Fetch game data using game_id from clip
+    let gameData = null;
+    if (clipData.game_id) {
+      try {
+        gameData = await fetchGameData(clipData.game_id, token);
+      } catch (error) {
+        console.error('Error fetching game data:', error);
+        // Continue without game data, will fallback to "Other"
+      }
+    }
 
-    // Format game name properly
+    // Format game name properly - maps official Twitch names to our standardized names
     const formatGameName = (gameName: string | null | undefined): string => {
       if (!gameName) {
         return 'Other';
       }
       
+      // Map official Twitch game names to our standardized names
       const gameMap: { [key: string]: string } = {
+        // Path of Exile games
         'path of exile': 'Path of Exile',
         'path of exile 2': 'Path of Exile 2',
-        'last epoch': 'Last Epoch',
+        
+        // Diablo games (using official Twitch names)
         'diablo iv': 'Diablo 4',
-        'diablo iii': 'Diablo 3',
+        'diablo iii': 'Diablo 3', 
         'diablo ii': 'Diablo 2',
         'diablo ii: resurrected': 'Diablo 2',
+        
+        // Other ARPG games
+        'last epoch': 'Last Epoch',
         'world of warcraft': 'World of Warcraft',
         'titan quest 2': 'Titan Quest 2',
       };
@@ -134,10 +173,12 @@ export async function POST(request: NextRequest) {
     const metadata = {
       title: clipData.title,
       streamer: broadcasterData.display_name,
-      game: formatGameName(clipData.game_name),
+      game: formatGameName(gameData?.name),
       thumbnailUrl: clipData.thumbnail_url,
       duration: clipData.duration,
       createdAt: clipData.created_at,
+      streamerProfileImageUrl: broadcasterData.profile_image_url,
+      gameBoxArtUrl: gameData?.box_art_url,
     };
 
     return NextResponse.json(metadata);

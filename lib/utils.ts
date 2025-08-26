@@ -59,6 +59,8 @@ export interface ClipMetadata {
   thumbnailUrl?: string;
   duration?: number;
   createdAt?: string;
+  streamerProfileImageUrl?: string;
+  gameBoxArtUrl?: string;
 }
 
 // Extract clip ID from Twitch URL

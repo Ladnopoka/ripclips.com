@@ -31,6 +31,8 @@ export interface ClipSubmission {
   likes?: number;
   views?: number;
   comments?: number;
+  streamerProfileImageUrl?: string;
+  gameBoxArtUrl?: string;
 }
 
 export interface ClipComment {
