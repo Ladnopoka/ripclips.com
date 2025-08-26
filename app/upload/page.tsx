@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuthContext } from "@/lib/AuthContext";
 import { useRouter } from "next/navigation";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { SuccessMessage } from "@/components/ui/SuccessMessage";
 import { submitClip } from "@/lib/database";
+import { fetchTwitchClipMetadata, extractTwitchClipId } from "@/lib/utils";
 
 export default function SubmitClipPage() {
   const { user } = useAuthContext();
@@ -19,11 +20,45 @@ export default function SubmitClipPage() {
   const [errors, setErrors] = useState<string[]>([]);
   const [successMessage, setSuccessMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoadingMetadata, setIsLoadingMetadata] = useState(false);
+  const [metadataExtracted, setMetadataExtracted] = useState(false);
 
   const validateClipUrl = (url: string) => {
     const twitchClipRegex = /^https:\/\/(?:clips\.twitch\.tv|www\.twitch\.tv\/\w+\/clip)\/[\w-]+/;
     const youtubeRegex = /^https:\/\/(?:www\.youtube\.com\/watch\?v=|youtu\.be\/)[\w-]+/;
     return twitchClipRegex.test(url) || youtubeRegex.test(url);
+  };
+
+  // Auto-extract metadata when Twitch URL is entered
+  const handleUrlChange = async (url: string) => {
+    setClipUrl(url);
+    setErrors([]);
+    
+    // Reset metadata extracted flag when URL changes
+    setMetadataExtracted(false);
+    
+    // Check if it's a Twitch clip URL
+    const clipId = extractTwitchClipId(url);
+    if (clipId && url.trim() !== "") {
+      setIsLoadingMetadata(true);
+      try {
+        const metadata = await fetchTwitchClipMetadata(url);
+        if (metadata) {
+          setTitle(metadata.title);
+          setStreamer(metadata.streamer);
+          setGame(metadata.game);
+          setMetadataExtracted(true);
+          setSuccessMessage("✨ Clip metadata extracted successfully!");
+        } else {
+          setErrors(["Could not extract metadata from this Twitch clip. Please fill in the details manually."]);
+        }
+      } catch (error) {
+        console.error("Error extracting metadata:", error);
+        setErrors(["Failed to extract clip metadata. Please fill in the details manually."]);
+      } finally {
+        setIsLoadingMetadata(false);
+      }
+    }
   };
 
   const handleSubmit = async () => {
@@ -34,9 +69,14 @@ export default function SubmitClipPage() {
     const validationErrors: string[] = [];
     if (!clipUrl.trim()) validationErrors.push("Clip URL is required");
     else if (!validateClipUrl(clipUrl)) validationErrors.push("Please enter a valid Twitch clip or YouTube URL");
-    if (!title.trim()) validationErrors.push("Title is required");
-    if (!game.trim()) validationErrors.push("Game is required");
-    if (!streamer.trim()) validationErrors.push("Streamer name is required");
+    
+    // For non-Twitch clips or if metadata extraction failed, require manual input
+    const isTwitchClip = extractTwitchClipId(clipUrl) !== null;
+    if (!isTwitchClip || !metadataExtracted) {
+      if (!title.trim()) validationErrors.push("Title is required");
+      if (!game.trim()) validationErrors.push("Game is required");
+      if (!streamer.trim()) validationErrors.push("Streamer name is required");
+    }
 
     if (validationErrors.length > 0) {
       setErrors(validationErrors);
@@ -121,66 +161,98 @@ export default function SubmitClipPage() {
               <label className="block text-red-300 text-sm font-medium mb-2">
                 Clip URL
               </label>
-              <input
-                type="url"
-                placeholder="https://clips.twitch.tv/... or https://youtube.com/watch?v=..."
-                value={clipUrl}
-                onChange={(e) => setClipUrl(e.target.value)}
-                className="w-full bg-black border border-red-600 rounded-lg px-4 py-3 text-white focus:border-red-400 focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 shadow-lg"
-              />
+              <div className="relative">
+                <input
+                  type="url"
+                  placeholder="https://clips.twitch.tv/... or https://youtube.com/watch?v=..."
+                  value={clipUrl}
+                  onChange={(e) => handleUrlChange(e.target.value)}
+                  disabled={isLoadingMetadata}
+                  className="w-full bg-black border border-red-600 rounded-lg px-4 py-3 text-white focus:border-red-400 focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 shadow-lg disabled:opacity-50"
+                />
+                {isLoadingMetadata && (
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                    <LoadingSpinner size="sm" />
+                  </div>
+                )}
+              </div>
               <p className="text-red-200/70 text-sm mt-1">
-                Submit Twitch and YouTube clips
+                {extractTwitchClipId(clipUrl) ? 
+                  "✨ Twitch clips auto-fill metadata!" : 
+                  "Submit Twitch and YouTube clips"
+                }
               </p>
+              {metadataExtracted && (
+                <p className="text-green-400 text-xs mt-1">
+                  ✅ Metadata extracted successfully - you can edit the details below if needed
+                </p>
+              )}
             </div>
 
             {/* Title */}
             <div>
               <label className="block text-red-300 text-sm font-medium mb-2">
-                Title
+                Title {metadataExtracted && <span className="text-green-400 text-xs">(Auto-filled)</span>}
               </label>
               <input
                 type="text"
-                placeholder="Epic hardcore death, Boss fight disaster, Build failure, etc."
+                placeholder={metadataExtracted ? "Auto-filled from Twitch clip" : "Epic hardcore death, Boss fight disaster, Build failure, etc."}
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full bg-black border border-red-600 rounded-lg px-4 py-3 text-white focus:border-red-400 focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 shadow-lg"
+                className={`w-full bg-black border rounded-lg px-4 py-3 text-white focus:border-red-400 focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 shadow-lg ${
+                  metadataExtracted ? 'border-green-600' : 'border-red-600'
+                }`}
               />
             </div>
 
             {/* Game */}
             <div>
               <label className="block text-red-300 text-sm font-medium mb-2">
-                Game
+                Game {metadataExtracted && <span className="text-green-400 text-xs">(Auto-filled)</span>}
               </label>
-              <select
-                value={game}
-                onChange={(e) => setGame(e.target.value)}
-                className="w-full bg-black border border-red-600 rounded-lg px-4 py-3 text-white focus:border-red-400 focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 shadow-lg"
-              >
-                <option value="">Select Game</option>
-                <option value="Path of Exile">💀 Path of Exile</option>
-                <option value="Path of Exile 2">🔥 Path of Exile 2</option>
-                <option value="Last Epoch">⚰️ Last Epoch</option>
-                <option value="Diablo 4">🔥 Diablo 4</option>
-                <option value="Diablo 2">🩸 Diablo 3</option>
-                <option value="Diablo 3">⚔️ Diablo 2</option>
-                <option value="Titan Quest 2">⚡ Titan Quest 2</option>
-                <option value="World of Warcraft">🏰 World of Warcraft</option>
-                <option value="Other">🗡️ Other Games</option>
-              </select>
+              {metadataExtracted && !["Path of Exile", "Path of Exile 2", "Last Epoch", "Diablo 4", "Diablo 3", "Diablo 2", "Titan Quest 2", "World of Warcraft"].includes(game) ? (
+                <input
+                  type="text"
+                  placeholder="Game name auto-filled"
+                  value={game}
+                  onChange={(e) => setGame(e.target.value)}
+                  className="w-full bg-black border border-green-600 rounded-lg px-4 py-3 text-white focus:border-red-400 focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 shadow-lg"
+                />
+              ) : (
+                <select
+                  value={game}
+                  onChange={(e) => setGame(e.target.value)}
+                  className={`w-full bg-black border rounded-lg px-4 py-3 text-white focus:border-red-400 focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 shadow-lg ${
+                    metadataExtracted ? 'border-green-600' : 'border-red-600'
+                  }`}
+                >
+                  <option value="">Select Game</option>
+                  <option value="Path of Exile">💀 Path of Exile</option>
+                  <option value="Path of Exile 2">🔥 Path of Exile 2</option>
+                  <option value="Last Epoch">⚰️ Last Epoch</option>
+                  <option value="Diablo 4">🔥 Diablo 4</option>
+                  <option value="Diablo 3">🩸 Diablo 3</option>
+                  <option value="Diablo 2">⚔️ Diablo 2</option>
+                  <option value="Titan Quest 2">⚡ Titan Quest 2</option>
+                  <option value="World of Warcraft">🏰 World of Warcraft</option>
+                  <option value="Other">🗡️ Other Games</option>
+                </select>
+              )}
             </div>
 
             {/* Streamer */}
             <div>
               <label className="block text-red-300 text-sm font-medium mb-2">
-                Who RIP'd?
+                Who RIP'd? {metadataExtracted && <span className="text-green-400 text-xs">(Auto-filled)</span>}
               </label>
               <input
                 type="text"
-                placeholder="Name of the fallen warrior (streamer/creator)"
+                placeholder={metadataExtracted ? "Auto-filled from Twitch clip" : "Name of the fallen warrior (streamer/creator)"}
                 value={streamer}
                 onChange={(e) => setStreamer(e.target.value)}
-                className="w-full bg-black border border-red-600 rounded-lg px-4 py-3 text-white focus:border-red-400 focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 shadow-lg"
+                className={`w-full bg-black border rounded-lg px-4 py-3 text-white focus:border-red-400 focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 shadow-lg ${
+                  metadataExtracted ? 'border-green-600' : 'border-red-600'
+                }`}
               />
             </div>
 

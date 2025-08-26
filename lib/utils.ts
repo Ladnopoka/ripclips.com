@@ -50,3 +50,61 @@ export const formatTimestamp = (timestamp: any): string => {
   if (diffDays < 7) return `${diffDays}d ago`;
   return clipDate.toLocaleDateString();
 };
+
+// Interface for clip metadata
+export interface ClipMetadata {
+  title: string;
+  streamer: string;
+  game: string;
+  thumbnailUrl?: string;
+  duration?: number;
+  createdAt?: string;
+}
+
+// Extract clip ID from Twitch URL
+export const extractTwitchClipId = (url: string): string | null => {
+  const twitchClipRegex = /(?:clips\.twitch\.tv\/|twitch\.tv\/\w+\/clip\/)([A-Za-z0-9_-]+)/;
+  const match = url.match(twitchClipRegex);
+  return match ? match[1] : null;
+};
+
+// Fetch Twitch clip metadata using Twitch API
+export const fetchTwitchClipMetadata = async (clipUrl: string): Promise<ClipMetadata | null> => {
+  try {
+    const clipId = extractTwitchClipId(clipUrl);
+    if (!clipId) {
+      throw new Error('Invalid Twitch clip URL');
+    }
+
+    // Call our API route that handles Twitch API requests
+    const response = await fetch('/api/twitch-metadata', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ clipId }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch metadata from Twitch API');
+    }
+
+    const data = await response.json();
+    
+    if (data.error) {
+      throw new Error(data.error);
+    }
+
+    return {
+      title: data.title,
+      streamer: data.streamer,
+      game: data.game,
+      thumbnailUrl: data.thumbnailUrl,
+      duration: data.duration,
+      createdAt: data.createdAt,
+    };
+  } catch (error) {
+    console.error('Error fetching Twitch clip metadata:', error);
+    return null;
+  }
+};
