@@ -25,3 +25,26 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Scrolling title animation */
+@keyframes title-scroll {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(0); }
+  75% { transform: translateX(-50%); }
+  100% { transform: translateX(-50%); }
+}
+
+.scrolling-title {
+  animation: title-scroll 8s infinite ease-in-out;
+  white-space: nowrap;
+}
+
+.scrolling-title:hover {
+  animation-play-state: paused;
+}
+
+.title-container {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}

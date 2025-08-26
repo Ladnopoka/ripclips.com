@@ -74,13 +74,14 @@ const ClipCard: React.FC<ClipCardProps> = ({ clip, onLikeChange, isPlaying, onPl
     <div className="bg-gray-900 rounded-lg border border-red-900/30 overflow-hidden mb-3">
       {/* Clip Header - Single Compact Line */}
       <div className="p-3">
-        <div className="relative flex items-center w-full">
+        <div className="flex items-center w-full gap-2">
+          {/* Left Component - Streamer Info */}
           <div className="flex items-center space-x-2 flex-shrink-0">
             {clip.streamerProfileImageUrl ? (
               <img 
                 src={clip.streamerProfileImageUrl} 
                 alt={`${clip.streamer} profile`}
-                className="w-6 h-6 rounded-full object-cover border border-green-400"
+                className="w-6 h-6 rounded-full object-cover"
                 onLoad={() => {
                   console.log('✅ Streamer profile image loaded successfully:', clip.streamerProfileImageUrl);
                 }}
@@ -100,8 +101,24 @@ const ClipCard: React.FC<ClipCardProps> = ({ clip, onLikeChange, isPlaying, onPl
             <span className="text-red-200/40 text-xs">•</span>
             <span className="text-red-200/60 text-xs">{formatTimestamp(clip.submittedAt)}</span>
           </div>
-          <h2 className="absolute left-1/2 transform -translate-x-1/2 text-2xl font-bold text-red-500 hidden sm:block max-w-xs xl:max-w-md truncate px-4">{clip.title}</h2>
-          <div className="flex items-center space-x-2 flex-shrink-0 hidden sm:flex ml-auto">
+
+          {/* Middle Component - Scrolling Title */}
+          <div className="flex-1 flex justify-center min-w-0 px-2 hidden sm:flex">
+            {clip.title.length > 20 ? (
+              <div className="title-container max-w-xs">
+                <h2 className="text-2xl font-bold text-red-500 scrolling-title">
+                  {clip.title}
+                </h2>
+              </div>
+            ) : (
+              <h2 className="text-2xl font-bold text-red-500 text-center">
+                {clip.title}
+              </h2>
+            )}
+          </div>
+
+          {/* Right Component - Game Info */}
+          <div className="flex items-center space-x-2 flex-shrink-0 hidden sm:flex">
             {clip.gameBoxArtUrl && (() => {
               const processedUrl = clip.gameBoxArtUrl.replace('{width}', '40').replace('{height}', '54');
               console.log('🎮 Game box art URL processing:', {
@@ -112,7 +129,7 @@ const ClipCard: React.FC<ClipCardProps> = ({ clip, onLikeChange, isPlaying, onPl
                 <img 
                   src={processedUrl}
                   alt={`${clip.game} box art`}
-                  className="w-5 h-7 object-cover rounded border border-blue-400"
+                  className="w-5 h-7 object-cover rounded"
                   onLoad={() => {
                     console.log('✅ Game box art loaded successfully:', processedUrl);
                   }}
@@ -164,13 +181,13 @@ const ClipCard: React.FC<ClipCardProps> = ({ clip, onLikeChange, isPlaying, onPl
                 <img
                   src="/alkLFG-2x.gif"  // make sure this gif is saved with infinite loop
                   alt="Liked"
-                  className="w-8 h-8"
+                  className="rounded-lg shadow-lg max-h-[400px] w-8 h-8"
                 />
               ) : (
                 <img
                   src="/alkLFG-2x.gif"
                   alt="Not liked"
-                  className="w-8 h-8"
+                  className="rounded-lg w-8 h-8"
                 />
               )}
               {/* {liking ? (
@@ -339,7 +356,7 @@ export default function Homepage() {
         {/* Feed Header */}
         <div className="mb-1 text-center">
           <h1 className="text-2xl font-bold text-red-500 mb-3 flex items-center justify-center gap-2">
-            <img src="/nowae-4x.webp" alt="Death" className="w-10 h-10" />
+            <img src="/nowae-4x.webp" alt="Death" className="rounded-lg w-10 h-10" />
             RIP Clip Feed
           </h1>
           
