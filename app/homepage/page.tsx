@@ -8,12 +8,15 @@ import { formatEmbedUrl, formatTimestamp } from "@/lib/utils";
 interface ClipCardProps {
   clip: ClipSubmission & { userHasLiked?: boolean };
   onLikeChange: (clipId: string, newLikedState: boolean, newLikeCount: number) => void;
+  isPlaying: boolean;
+  onPlay: (clipId: string) => void;
 }
 
-const ClipCard: React.FC<ClipCardProps> = ({ clip, onLikeChange }) => {
+const ClipCard: React.FC<ClipCardProps> = ({ clip, onLikeChange, isPlaying, onPlay }) => {
   const [liked, setLiked] = useState(clip.userHasLiked || false);
   const [liking, setLiking] = useState(false);
   const [viewed, setViewed] = useState(false);
+  const [iframeKey, setIframeKey] = useState(0);
   const { user } = useAuthContext();
 
   // Track view when video iframe loads
@@ -23,6 +26,19 @@ const ClipCard: React.FC<ClipCardProps> = ({ clip, onLikeChange }) => {
       setViewed(true);
     }
   }, [clip.id, viewed]);
+
+  // Force iframe reload when this clip should stop playing
+  useEffect(() => {
+    if (!isPlaying && clip.id) {
+      setIframeKey(prev => prev + 1);
+    }
+  }, [isPlaying, clip.id]);
+
+  const handleIframeClick = () => {
+    if (clip.id) {
+      onPlay(clip.id);
+    }
+  };
 
   const handleLike = async () => {
     if (!user || !clip.id) return;
@@ -65,8 +81,9 @@ const ClipCard: React.FC<ClipCardProps> = ({ clip, onLikeChange }) => {
       </div>
 
       {/* Embedded Video */}
-      <div className="relative bg-black">
+      <div className="relative bg-black" onClick={handleIframeClick}>
         <iframe 
+          key={iframeKey}
           src={formatEmbedUrl(clip.clipUrl)}
           frameBorder="0" 
           allowFullScreen 
@@ -169,6 +186,7 @@ export default function Homepage() {
   const [loading, setLoading] = useState(true);
   const [selectedGame, setSelectedGame] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("newest");
+  const [playingClipId, setPlayingClipId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchClips = async () => {
@@ -260,6 +278,11 @@ export default function Homepage() {
     );
   };
 
+  // Handler for when a clip starts playing
+  const handleClipPlay = (clipId: string) => {
+    setPlayingClipId(clipId);
+  };
+
   return (
     <div className="min-h-screen">
       {/* Feed Container */}
@@ -318,7 +341,13 @@ export default function Homepage() {
         {/* Clip Feed */}
         <div className="space-y-6">
           {filteredClips.map((clip) => (
-            <ClipCard key={clip.id} clip={clip} onLikeChange={handleLikeChange} />
+            <ClipCard 
+              key={clip.id} 
+              clip={clip} 
+              onLikeChange={handleLikeChange}
+              isPlaying={playingClipId === clip.id}
+              onPlay={handleClipPlay}
+            />
           ))}
 
           {loading ? (
