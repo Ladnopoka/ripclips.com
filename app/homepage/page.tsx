@@ -62,22 +62,21 @@ const ClipCard: React.FC<ClipCardProps> = ({ clip, onLikeChange, isPlaying, onPl
   };
 
   return (
-    <div className="bg-gradient-to-b from-gray-900 to-red-950/30 rounded-xl border border-red-900/50 overflow-hidden shadow-2xl mb-6">
-      {/* Clip Header */}
-      <div className="p-4 border-b border-red-900/30">
+    <div className="bg-gray-900 rounded-lg border border-red-900/30 overflow-hidden mb-3">
+      {/* Clip Header - Single Compact Line */}
+      <div className="p-3">
         <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-red-600 to-red-800 rounded-full flex items-center justify-center text-white text-sm font-medium">
+          <div className="flex items-center space-x-2 flex-1">
+            <div className="w-6 h-6 bg-gradient-to-br from-red-600 to-red-800 rounded-full flex items-center justify-center text-white text-xs font-medium">
               {clip.streamer[0].toUpperCase()}
             </div>
-            <div>
-              <h3 className="text-red-300 font-medium">{clip.streamer}</h3>
-              <p className="text-red-200/60 text-sm">{formatTimestamp(clip.submittedAt)}</p>
-            </div>
+            <span className="text-red-300 font-medium text-sm">{clip.streamer}</span>
+            <span className="text-red-200/40 text-xs">•</span>
+            <span className="text-red-200/60 text-xs">{formatTimestamp(clip.submittedAt)}</span>
           </div>
-          <div className="text-red-400 text-sm font-medium">{clip.game}</div>
+          <span className="text-red-400 text-xs font-medium ml-auto">{clip.game}</span>
         </div>
-        <h2 className="text-lg font-bold text-white mb-2">{clip.title}</h2>
+        <h2 className="text-red-500 font-bold text-2xl leading-tight text-center tracking-wide" style={{ fontFamily: 'serif'}}>{clip.title}</h2>
       </div>
 
       {/* Embedded Video */}
@@ -96,8 +95,8 @@ const ClipCard: React.FC<ClipCardProps> = ({ clip, onLikeChange, isPlaying, onPl
       </div>
 
       {/* Clip Footer */}
-      <div className="p-4">
-        <p className="text-red-200/70 mb-4">{clip.description}</p>
+      <div className="p-3">
+        <p className="text-red-200/70 mb-3 text-sm">{clip.description}</p>
         
         {/* Actions */}
         <div className="flex items-center justify-between">
@@ -339,7 +338,7 @@ export default function Homepage() {
         </div>
 
         {/* Clip Feed */}
-        <div className="space-y-6">
+        <div className="space-y-3">
           {filteredClips.map((clip) => (
             <ClipCard 
               key={clip.id} 
@@ -351,24 +350,24 @@ export default function Homepage() {
           ))}
 
           {loading ? (
-            <div className="bg-gradient-to-b from-gray-900 to-red-950/30 rounded-xl border border-red-900/50 p-8 text-center">
+            <div className="bg-gray-900 rounded-lg border border-red-900/30 p-6 text-center">
               <div className="animate-pulse">
-                <div className="w-16 h-16 bg-red-900/50 rounded-full mx-auto mb-4"></div>
-                <p className="text-red-200/60">Loading deaths...</p>
+                <div className="w-12 h-12 bg-red-900/50 rounded-full mx-auto mb-3"></div>
+                <p className="text-red-200/60 text-sm">Loading deaths...</p>
               </div>
             </div>
           ) : filteredClips.length === 0 ? (
-            <div className="bg-gradient-to-b from-gray-900 to-red-950/30 rounded-xl border border-red-900/50 p-8 text-center">
+            <div className="bg-gray-900 rounded-lg border border-red-900/30 p-6 text-center">
               <div className="mb-4">💀</div>
               {clips.length === 0 ? (
                 <>
-                  <p className="text-red-200/60 mb-4">No death clips yet!</p>
-                  <p className="text-red-200/40 text-sm">Be the first to submit an epic ARPG death</p>
+                  <p className="text-red-200/60 mb-3 text-sm">No death clips yet!</p>
+                  <p className="text-red-200/40 text-xs">Be the first to submit an epic ARPG death</p>
                 </>
               ) : (
                 <>
-                  <p className="text-red-200/60 mb-4">No deaths found for these filters</p>
-                  <p className="text-red-200/40 text-sm">Try adjusting your game or sorting options</p>
+                  <p className="text-red-200/60 mb-3 text-sm">No deaths found for these filters</p>
+                  <p className="text-red-200/40 text-xs">Try adjusting your game or sorting options</p>
                 </>
               )}
             </div>
