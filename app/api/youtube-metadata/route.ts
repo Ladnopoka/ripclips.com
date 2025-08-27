@@ -68,45 +68,173 @@ function mapCategoryToGame(categoryId: string, title: string, description: strin
   
   if (gamingCategories.includes(categoryId)) {
     // Try to extract game name from title or description
+    // IMPORTANT: Order matters! More specific matches must come first
+    // Using exact game names as per YouTube search best practices
     const gameKeywords = [
-      { keywords: ['path of exile 2', 'poe2'], game: 'Path of Exile 2' },
-      { keywords: ['path of exile', 'poe'], game: 'Path of Exile' },
-      { keywords: ['diablo 4', 'diablo iv', 'd4'], game: 'Diablo 4' },
-      { keywords: ['diablo 3', 'diablo iii', 'd3'], game: 'Diablo 3' },
-      { keywords: ['diablo 2', 'diablo ii', 'd2', 'diablo 2 resurrected'], game: 'Diablo 2' },
-      { keywords: ['last epoch', 'le'], game: 'Last Epoch' },
-      { keywords: ['world of warcraft', 'wow'], game: 'World of Warcraft' },
+      { keywords: ['path of exile 2', 'poe2', 'path of exile ii'], game: 'Path of Exile 2' },
+      { keywords: ['diablo ii: resurrected', 'diablo 2: resurrected', 'diablo 2 resurrected'], game: 'Diablo 2' },
+      { keywords: ['diablo iv', 'diablo 4'], game: 'Diablo 4' },  
+      { keywords: ['diablo iii', 'diablo 3'], game: 'Diablo 3' },
+      { keywords: ['diablo ii', 'diablo 2'], game: 'Diablo 2' },
+      { keywords: ['path of exile'], game: 'Path of Exile' }, // After PoE2 check
+      { keywords: ['last epoch'], game: 'Last Epoch' },
+      { keywords: ['world of warcraft', 'wow classic', 'wow retail'], game: 'World of Warcraft' },
       { keywords: ['titan quest 2'], game: 'Titan Quest 2' },
     ];
 
     const searchText = (title + ' ' + description).toLowerCase();
+    console.log('🎮 Game detection - searching in text:', searchText.substring(0, 200) + '...');
     
     for (const { keywords, game } of gameKeywords) {
-      if (keywords.some(keyword => searchText.includes(keyword))) {
+      const matchedKeyword = keywords.find(keyword => {
+        // Use word boundary regex for more precise matching
+        const regex = new RegExp('\\b' + keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
+        return regex.test(searchText);
+      });
+      if (matchedKeyword) {
+        console.log(`🎮 Game detected: "${game}" (matched keyword: "${matchedKeyword}")`);
+        console.log(`🎮 Search text context: ...${searchText.substring(Math.max(0, searchText.indexOf(matchedKeyword.toLowerCase()) - 20), searchText.indexOf(matchedKeyword.toLowerCase()) + matchedKeyword.length + 20)}...`);
         return game;
       }
     }
+    
+    console.log('🎮 No game detected, defaulting to "Other"');
   }
   
   return 'Other';
 }
 
-// Get game box art URL (since YouTube doesn't have game info, we'll use a placeholder or mapping)
-function getGameBoxArtUrl(gameName: string): string | null {
-  // This is a simplified approach - in production, you might want to use a game database API
-  // or maintain your own mapping of game names to box art URLs
-  const gameBoxArtMap: { [key: string]: string } = {
-    'Path of Exile': 'https://static-cdn.jtvnw.net/ttv-boxart/29307-{width}x{height}.jpg',
-    'Path of Exile 2': 'https://static-cdn.jtvnw.net/ttv-boxart/1003654309-{width}x{height}.jpg',
-    'Diablo 4': 'https://static-cdn.jtvnw.net/ttv-boxart/515024-{width}x{height}.jpg',
-    'Diablo 3': 'https://static-cdn.jtvnw.net/ttv-boxart/313558-{width}x{height}.jpg',
-    'Diablo 2': 'https://static-cdn.jtvnw.net/ttv-boxart/1788326818-{width}x{height}.jpg',
-    'Last Epoch': 'https://static-cdn.jtvnw.net/ttv-boxart/506415-{width}x{height}.jpg',
-    'World of Warcraft': 'https://static-cdn.jtvnw.net/ttv-boxart/18122-{width}x{height}.jpg',
-    'Titan Quest 2': 'https://static-cdn.jtvnw.net/ttv-boxart/1003654309-{width}x{height}.jpg', // placeholder
+// Get Twitch access token for IGDB API (same credentials)
+async function getTwitchAccessToken(): Promise<string> {
+  const TWITCH_CLIENT_ID = process.env.TWITCH_CLIENT_ID;
+  const TWITCH_CLIENT_SECRET = process.env.TWITCH_CLIENT_SECRET;
+
+  if (!TWITCH_CLIENT_ID || !TWITCH_CLIENT_SECRET) {
+    throw new Error('Twitch API credentials not configured');
+  }
+
+  try {
+    const response = await fetch('https://id.twitch.tv/oauth2/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        client_id: TWITCH_CLIENT_ID,
+        client_secret: TWITCH_CLIENT_SECRET,
+        grant_type: 'client_credentials',
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to get Twitch access token');
+    }
+
+    const data = await response.json();
+    return data.access_token;
+  } catch (error) {
+    console.error('Error getting Twitch access token:', error);
+    throw error;
+  }
+}
+
+// Get game box art from IGDB API
+async function getGameBoxArtFromIGDB(gameName: string): Promise<string | null> {
+  if (gameName === 'Other') {
+    return null;
+  }
+
+  try {
+    const accessToken = await getTwitchAccessToken();
+    const TWITCH_CLIENT_ID = process.env.TWITCH_CLIENT_ID;
+
+    // Map game names to IGDB search queries
+    const gameSearchMap: { [key: string]: string } = {
+      'Path of Exile': 'Path of Exile',
+      'Path of Exile 2': 'Path of Exile 2',
+      'Diablo 4': 'Diablo IV',
+      'Diablo 3': 'Diablo III', 
+      'Diablo 2': 'Diablo II',
+      'Last Epoch': 'Last Epoch',
+      'World of Warcraft': 'World of Warcraft',
+      'Titan Quest 2': 'Titan Quest 2',
+    };
+
+    const searchQuery = gameSearchMap[gameName] || gameName;
+    console.log(`🎮 Searching IGDB for box art: "${searchQuery}"`);
+
+    // Search for the game
+    const searchResponse = await fetch('https://api.igdb.com/v4/games', {
+      method: 'POST',
+      headers: {
+        'Client-ID': TWITCH_CLIENT_ID!,
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'text/plain',
+      },
+      body: `search "${searchQuery}"; fields name,cover.url; limit 1;`,
+    });
+
+    if (!searchResponse.ok) {
+      console.error('🎮 Failed to search IGDB:', searchResponse.status);
+      return null;
+    }
+
+    const games = await searchResponse.json();
+    
+    if (!games || games.length === 0) {
+      console.log(`🎮 No IGDB results found for game: ${gameName}`);
+      return null;
+    }
+
+    const game = games[0];
+    if (game.cover?.url) {
+      // Convert IGDB thumbnail URL to full size
+      const boxArtUrl = game.cover.url.replace('t_thumb', 't_cover_big');
+      console.log(`🎮 Found IGDB box art for "${gameName}": ${boxArtUrl}`);
+      return `https:${boxArtUrl}`;
+    }
+
+    console.log(`🎮 No cover art found in IGDB for game: ${gameName}`);
+    return null;
+  } catch (error) {
+    console.error(`🎮 Error fetching IGDB box art for ${gameName}:`, error);
+    return null;
+  }
+}
+
+// Get game box art with fallback system
+async function getGameBoxArtUrl(gameName: string): Promise<string | null> {
+  if (gameName === 'Other') {
+    return null;
+  }
+
+  // Try IGDB first (proper game database)
+  console.log(`🎮 Attempting to get box art for "${gameName}" from IGDB...`);
+  const igdbUrl = await getGameBoxArtFromIGDB(gameName);
+  if (igdbUrl) {
+    return igdbUrl;
+  }
+
+  // Fallback to static URLs if IGDB fails
+  console.log(`🎮 IGDB failed, using fallback box art for "${gameName}"`);
+  const fallbackBoxArtMap: { [key: string]: string } = {
+    'Path of Exile': 'https://static-cdn.jtvnw.net/ttv-boxart/29307-285x380.jpg',
+    'Path of Exile 2': 'https://static-cdn.jtvnw.net/ttv-boxart/1003654309-285x380.jpg',
+    'Diablo 4': 'https://static-cdn.jtvnw.net/ttv-boxart/515024-285x380.jpg',
+    'Diablo 3': 'https://static-cdn.jtvnw.net/ttv-boxart/313558-285x380.jpg',
+    'Diablo 2': 'https://static-cdn.jtvnw.net/ttv-boxart/1788326818-285x380.jpg',
+    'Last Epoch': 'https://static-cdn.jtvnw.net/ttv-boxart/506415-285x380.jpg',
+    'World of Warcraft': 'https://static-cdn.jtvnw.net/ttv-boxart/18122-285x380.jpg',
   };
   
-  return gameBoxArtMap[gameName] || null;
+  const fallbackUrl = fallbackBoxArtMap[gameName] || null;
+  if (fallbackUrl) {
+    console.log(`🎮 Using fallback box art for "${gameName}": ${fallbackUrl}`);
+  } else {
+    console.log(`🎮 No box art available for "${gameName}"`);
+  }
+  
+  return fallbackUrl;
 }
 
 export async function POST(request: NextRequest) {
@@ -144,7 +272,8 @@ export async function POST(request: NextRequest) {
       videoData.snippet.description || ''
     );
     
-    const gameBoxArtUrl = getGameBoxArtUrl(game);
+    // Fetch game box art dynamically from YouTube search
+    const gameBoxArtUrl = await getGameBoxArtUrl(game);
 
     const metadata = {
       title: videoData.snippet.title,

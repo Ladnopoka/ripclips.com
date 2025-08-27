@@ -61,7 +61,7 @@ export const submitClip = async (clipData: Omit<ClipSubmission, 'id' | 'submitte
   try {
     // Filter out undefined values as Firestore doesn't accept them
     const cleanedData = Object.fromEntries(
-      Object.entries(clipData).filter(([_, value]) => value !== undefined)
+      Object.entries(clipData).filter(([, value]) => value !== undefined)
     );
     
     const docRef = await addDoc(collection(db, CLIPS_COLLECTION), {
