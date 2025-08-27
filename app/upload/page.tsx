@@ -304,7 +304,7 @@ export default function SubmitClipPage() {
             <button
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-medium transition-all flex items-center justify-center shadow-xl border border-red-800"
+              className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-medium transition-all flex items-center justify-center shadow-xl border border-red-800 cursor-pointer"
             >
               {isSubmitting ? <LoadingSpinner size="sm" /> : "🩸 Submit RIP Clip"}
             </button>

@@ -56,9 +56,10 @@ export const Header: React.FC = () => {
               <Link href="/about" className="text-red-200 hover:text-red-400 transition-colors font-medium">
                 About
               </Link>
-              <Link href="/clips" className="text-red-200 hover:text-red-400 transition-colors font-medium">
+              {/* DISABLED FOR NOW AS THIS WILL BE DEVELOPPED IN THE FUTURE
+               <Link href="/clips" className="text-red-200 hover:text-red-400 transition-colors font-medium">
                 Browse Clips
-              </Link>
+              </Link> */}
               <Link href="/support" className="text-red-200 hover:text-red-400 transition-colors font-medium flex items-center space-x-1">
                 <span>☕Support Us</span>
               </Link>
