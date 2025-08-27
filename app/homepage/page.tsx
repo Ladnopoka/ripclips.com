@@ -331,9 +331,9 @@ const ClipCard: React.FC<ClipCardProps> = ({ clip, onLikeChange, isPlaying, onPl
               
               {/* Copy Success Tooltip */}
               {showCopyTooltip && (
-                <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-green-600 text-white text-xs px-2 py-1 rounded shadow-lg z-10 whitespace-nowrap animate-fade-in">
+                <div className="absolute -top-10 left-1/2 bg-green-600 text-white text-xs px-2 py-1 rounded shadow-lg z-10 whitespace-nowrap animate-fade-in" style={{ transform: 'translateX(-50%)' }}>
                   Link Copied!
-                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-green-600"></div>
+                  <div className="absolute top-full left-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-green-600" style={{ transform: 'translateX(-50%)' }}></div>
                 </div>
               )}
             </button>
