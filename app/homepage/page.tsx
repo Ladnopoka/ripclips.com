@@ -280,13 +280,13 @@ const ClipCard: React.FC<ClipCardProps> = ({ clip, onLikeChange, isPlaying, onPl
                 <img
                   src="/alkLFG-2x.gif"  // make sure this gif is saved with infinite loop
                   alt="Liked"
-                  className="rounded-lg shadow-lg max-h-[400px] w-8 h-8"
+                  className="rounded-lg shadow-lg max-h-[400px] w-8 h-8 cursor-pointer"
                 />
               ) : (
                 <img
                   src="/alkLFG-2x.gif"
                   alt="Not liked"
-                  className="rounded-lg w-8 h-8"
+                  className="rounded-lg w-8 h-8 cursor-pointer"
                 />
               )}
               {/* {liking ? (
