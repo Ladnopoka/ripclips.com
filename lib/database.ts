@@ -59,8 +59,13 @@ const LIKES_COLLECTION = 'clip_likes';
 // Clip Submission Functions
 export const submitClip = async (clipData: Omit<ClipSubmission, 'id' | 'submittedAt' | 'status' | 'likes' | 'views' | 'comments'>): Promise<string> => {
   try {
+    // Filter out undefined values as Firestore doesn't accept them
+    const cleanedData = Object.fromEntries(
+      Object.entries(clipData).filter(([_, value]) => value !== undefined)
+    );
+    
     const docRef = await addDoc(collection(db, CLIPS_COLLECTION), {
-      ...clipData,
+      ...cleanedData,
       submittedAt: Timestamp.now(),
       status: 'pending' as const,
       likes: 0,
