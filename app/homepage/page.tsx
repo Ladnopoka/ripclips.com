@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuthContext } from "@/lib/AuthContext";
 import { getApprovedClips, hasUserLikedClip, likeClip, unlikeClip, incrementViews, type ClipSubmission } from "@/lib/database";
 import { formatEmbedUrl, formatTimestamp } from "@/lib/utils";
@@ -18,6 +18,8 @@ const ClipCard: React.FC<ClipCardProps> = ({ clip, onLikeChange, isPlaying, onPl
   const [viewed, setViewed] = useState(false);
   const [iframeKey, setIframeKey] = useState(0);
   const { user } = useAuthContext();
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Track view when video iframe loads
   useEffect(() => {
@@ -33,6 +35,77 @@ const ClipCard: React.FC<ClipCardProps> = ({ clip, onLikeChange, isPlaying, onPl
       setIframeKey(prev => prev + 1);
     }
   }, [isPlaying, clip.id]);
+
+  // Dynamic scrolling animation for long titles
+  useEffect(() => {
+    if (clip.title.length > 20 && titleRef.current && containerRef.current) {
+      const titleElement = titleRef.current;
+      const containerElement = containerRef.current;
+      
+      const setupAnimation = () => {
+        const containerWidth = containerElement.offsetWidth;
+        const titleWidth = titleElement.scrollWidth;
+        
+        // Debug logging
+        console.log(`Title: "${clip.title}"`, {
+          containerWidth,
+          titleWidth,
+          ratio: titleWidth / containerWidth
+        });
+        
+        if (titleWidth > containerWidth) {
+          // Calculate the distance needed to scroll to show the entire title
+          // Add a small buffer (10px) to ensure we see the very end
+          const scrollDistance = titleWidth - containerWidth + 10;
+          // Convert to percentage relative to the title width for CSS transform
+          const scrollPercentage = (scrollDistance / titleWidth) * 100;
+          
+          console.log(`Scroll calculation:`, {
+            scrollDistance,
+            scrollPercentage,
+            animationId: `title-scroll-${clip.id}`
+          });
+          
+          // Create dynamic keyframes
+          const keyframes = `
+            @keyframes title-scroll-${clip.id} {
+              0% { transform: translateX(0); }
+              25% { transform: translateX(0); }
+              75% { transform: translateX(-${scrollPercentage}%); }
+              100% { transform: translateX(-${scrollPercentage}%); }
+            }
+          `;
+          
+          // Remove existing style if any
+          const existingStyle = document.getElementById(`title-style-${clip.id}`);
+          if (existingStyle) {
+            existingStyle.remove();
+          }
+          
+          // Add new style
+          const styleElement = document.createElement('style');
+          styleElement.id = `title-style-${clip.id}`;
+          styleElement.textContent = keyframes;
+          document.head.appendChild(styleElement);
+          
+          // Apply animation
+          titleElement.style.animation = `title-scroll-${clip.id} 8s infinite ease-in-out`;
+        }
+      };
+      
+      // Setup animation after a brief delay to ensure elements are rendered
+      const timeoutId = setTimeout(setupAnimation, 100);
+      
+      // Cleanup function
+      return () => {
+        clearTimeout(timeoutId);
+        const styleElement = document.getElementById(`title-style-${clip.id}`);
+        if (styleElement) {
+          styleElement.remove();
+        }
+      };
+    }
+  }, [clip.title, clip.id]);
 
   const handleIframeClick = () => {
     if (clip.id) {
@@ -105,8 +178,8 @@ const ClipCard: React.FC<ClipCardProps> = ({ clip, onLikeChange, isPlaying, onPl
           {/* Middle Component - Scrolling Title */}
           <div className="flex-1 flex justify-center min-w-0 px-2 hidden sm:flex">
             {clip.title.length > 20 ? (
-              <div className="title-container max-w-xs">
-                <h2 className="text-2xl font-bold text-red-500 scrolling-title">
+              <div ref={containerRef} className="title-container max-w-xs">
+                <h2 ref={titleRef} className="text-2xl font-bold text-red-500" style={{ whiteSpace: 'nowrap' }}>
                   {clip.title}
                 </h2>
               </div>
