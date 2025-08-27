@@ -322,16 +322,22 @@ export default function Homepage() {
   const { user } = useAuthContext();
   const [clips, setClips] = useState<ClipSubmission[]>([]);
   const [filteredClips, setFilteredClips] = useState<ClipSubmission[]>([]);
+  const [displayedClips, setDisplayedClips] = useState<ClipSubmission[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [selectedGame, setSelectedGame] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("newest");
   const [playingClipId, setPlayingClipId] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  
+  const CLIPS_PER_PAGE = 5;
 
   useEffect(() => {
     const fetchClips = async () => {
       setLoading(true);
       try {
-        const approvedClips = await getApprovedClips();
+        const approvedClips = await getApprovedClips(1000);
         
         // Check like status for each clip if user is logged in
         if (user && approvedClips.length > 0) {
@@ -404,7 +410,72 @@ export default function Homepage() {
     }
 
     setFilteredClips(filtered);
+    // Reset pagination when filters change
+    setCurrentPage(0);
+    setHasMore(true);
   }, [clips, selectedGame, sortBy]);
+
+  // Update displayed clips when filtered clips or current page changes
+  useEffect(() => {
+    console.log(`Pagination update: currentPage=${currentPage}, totalFiltered=${filteredClips.length}`);
+    
+    if (currentPage === 0) {
+      // Initial load - show first batch
+      const initialClips = filteredClips.slice(0, CLIPS_PER_PAGE);
+      console.log(`Initial load: showing ${initialClips.length} clips`);
+      setDisplayedClips(initialClips);
+      setHasMore(CLIPS_PER_PAGE < filteredClips.length);
+    } else {
+      // Load more - append new clips to existing ones
+      const startIndex = currentPage * CLIPS_PER_PAGE;
+      const endIndex = startIndex + CLIPS_PER_PAGE;
+      const newClips = filteredClips.slice(startIndex, endIndex);
+      
+      console.log(`Loading more: page ${currentPage}, adding ${newClips.length} clips (indices ${startIndex}-${endIndex-1})`);
+      setDisplayedClips(prev => {
+        const updated = [...prev, ...newClips];
+        console.log(`Total displayed clips: ${updated.length}`);
+        return updated;
+      });
+      setHasMore(endIndex < filteredClips.length);
+    }
+  }, [filteredClips, currentPage, CLIPS_PER_PAGE]);
+
+  // Load more clips function
+  const loadMoreClips = () => {
+    if (!loadingMore && hasMore) {
+      setLoadingMore(true);
+      // Simulate loading delay (you can remove this in production)
+      setTimeout(() => {
+        setCurrentPage(prev => prev + 1);
+        setLoadingMore(false);
+      }, 300);
+    }
+  };
+
+  // Infinite scroll observer
+  useEffect(() => {
+    const observerTarget = document.getElementById('load-more-trigger');
+    
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loadingMore && !loading) {
+          loadMoreClips();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (observerTarget) {
+      observer.observe(observerTarget);
+    }
+
+    return () => {
+      if (observerTarget) {
+        observer.unobserve(observerTarget);
+      }
+    };
+  }, [hasMore, loadingMore, loading]);
 
   // Handler for updating like state in the UI
   const handleLikeChange = (clipId: string, newLikedState: boolean, newLikeCount: number) => {
@@ -473,13 +544,15 @@ export default function Homepage() {
 
           {/* Results Summary */}
           <p className="text-red-200/50 text-sm">
-            {loading ? "Loading..." : `${filteredClips.length} ${filteredClips.length === 1 ? 'death' : 'deaths'} found`}
+            {loading ? "Loading..." : 
+              `${displayedClips.length} of ${filteredClips.length} ${filteredClips.length === 1 ? 'death' : 'deaths'}${hasMore ? ' (scroll for more)' : ''}`
+            }
           </p>
         </div>
 
         {/* Clip Feed */}
         <div className="space-y-3">
-          {filteredClips.map((clip) => (
+          {displayedClips.map((clip) => (
             <ClipCard 
               key={clip.id} 
               clip={clip} 
@@ -489,6 +562,34 @@ export default function Homepage() {
             />
           ))}
 
+          {/* Load More Trigger - invisible element for intersection observer */}
+          {hasMore && !loading && (
+            <div id="load-more-trigger" className="h-1"></div>
+          )}
+
+          {/* Loading More Indicator */}
+          {loadingMore && (
+            <div className="bg-gray-900 rounded-lg border border-red-900/30 p-4 text-center">
+              <div className="animate-pulse">
+                <div className="w-8 h-8 bg-red-900/50 rounded-full mx-auto mb-2"></div>
+                <p className="text-red-200/60 text-sm">Loading more RIPs...</p>
+              </div>
+            </div>
+          )}
+
+          {/* Load More Button - fallback for manual loading */}
+          {!loadingMore && hasMore && !loading && displayedClips.length > 0 && (
+            <div className="text-center py-4">
+              <button
+                onClick={loadMoreClips}
+                className="bg-red-900/30 hover:bg-red-800/40 border border-red-600/50 text-red-200 px-6 py-3 rounded-lg transition-colors"
+              >
+                Load More RIPs
+              </button>
+            </div>
+          )}
+
+          {/* Initial Loading */}
           {loading ? (
             <div className="bg-gray-900 rounded-lg border border-red-900/30 p-6 text-center">
               <div className="animate-pulse">
@@ -496,7 +597,7 @@ export default function Homepage() {
                 <p className="text-red-200/60 text-sm">Loading RIPs...</p>
               </div>
             </div>
-          ) : filteredClips.length === 0 ? (
+          ) : displayedClips.length === 0 && filteredClips.length === 0 ? (
             <div className="bg-gray-900 rounded-lg border border-red-900/30 p-6 text-center">
               <div className="mb-4">💀</div>
               {clips.length === 0 ? (
