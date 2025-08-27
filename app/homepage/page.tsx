@@ -17,6 +17,7 @@ const ClipCard: React.FC<ClipCardProps> = ({ clip, onLikeChange, isPlaying, onPl
   const [liking, setLiking] = useState(false);
   const [viewed, setViewed] = useState(false);
   const [iframeKey, setIframeKey] = useState(0);
+  const [showCopyTooltip, setShowCopyTooltip] = useState(false);
   const { user } = useAuthContext();
   const titleRef = useRef<HTMLHeadingElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -137,7 +138,8 @@ const ClipCard: React.FC<ClipCardProps> = ({ clip, onLikeChange, isPlaying, onPl
   const handleCopyLink = async () => {
     try {
       await navigator.clipboard.writeText(clip.clipUrl);
-      // You could add a toast notification here if desired
+      setShowCopyTooltip(true);
+      setTimeout(() => setShowCopyTooltip(false), 2000);
       console.log("Clip link copied to clipboard:", clip.clipUrl);
     } catch (error) {
       console.error("Failed to copy link:", error);
@@ -149,6 +151,8 @@ const ClipCard: React.FC<ClipCardProps> = ({ clip, onLikeChange, isPlaying, onPl
         textArea.select();
         document.execCommand('copy');
         document.body.removeChild(textArea);
+        setShowCopyTooltip(true);
+        setTimeout(() => setShowCopyTooltip(false), 2000);
         console.log("Clip link copied to clipboard (fallback):", clip.clipUrl);
       } catch (fallbackError) {
         console.error("Fallback copy also failed:", fallbackError);
@@ -318,12 +322,20 @@ const ClipCard: React.FC<ClipCardProps> = ({ clip, onLikeChange, isPlaying, onPl
 
             <button 
               onClick={handleCopyLink}
-              className="flex items-center space-x-2 text-red-200/60 hover:text-red-400 transition-colors"
+              className="relative flex items-center space-x-2 text-red-200/60 hover:text-red-400 transition-colors cursor-pointer"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
               </svg>
               <span className="-ml-1">Copy Link</span>
+              
+              {/* Copy Success Tooltip */}
+              {showCopyTooltip && (
+                <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-green-600 text-white text-xs px-2 py-1 rounded shadow-lg z-10 whitespace-nowrap animate-fade-in">
+                  Link Copied!
+                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-green-600"></div>
+                </div>
+              )}
             </button>
           </div>
 
