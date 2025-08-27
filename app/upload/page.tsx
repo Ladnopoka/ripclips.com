@@ -7,7 +7,7 @@ import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { SuccessMessage } from "@/components/ui/SuccessMessage";
 import { submitClip } from "@/lib/database";
-import { fetchTwitchClipMetadata, extractTwitchClipId } from "@/lib/utils";
+import { fetchTwitchClipMetadata, extractTwitchClipId, fetchYouTubeMetadata, extractYouTubeVideoId } from "@/lib/utils";
 
 export default function SubmitClipPage() {
   const { user } = useAuthContext();
@@ -27,11 +27,11 @@ export default function SubmitClipPage() {
 
   const validateClipUrl = (url: string) => {
     const twitchClipRegex = /^https:\/\/(?:clips\.twitch\.tv|www\.twitch\.tv\/\w+\/clip)\/[\w-]+/;
-    const youtubeRegex = /^https:\/\/(?:www\.youtube\.com\/watch\?v=|youtu\.be\/)[\w-]+/;
+    const youtubeRegex = /^https:\/\/(?:(?:www\.)?youtube\.com\/watch\?v=|youtu\.be\/|(?:www\.)?youtube\.com\/embed\/|(?:www\.)?youtube\.com\/v\/|(?:www\.)?youtube\.com\/shorts\/)[\w-]+/;
     return twitchClipRegex.test(url) || youtubeRegex.test(url);
   };
 
-  // Auto-extract metadata when Twitch URL is entered
+  // Auto-extract metadata when Twitch or YouTube URL is entered
   const handleUrlChange = async (url: string) => {
     setClipUrl(url);
     setErrors([]);
@@ -42,12 +42,24 @@ export default function SubmitClipPage() {
     setGameBoxArtUrl("");
     
     // Check if it's a Twitch clip URL
-    const clipId = extractTwitchClipId(url);
-    if (clipId && url.trim() !== "") {
+    const twitchClipId = extractTwitchClipId(url);
+    const youtubeVideoId = extractYouTubeVideoId(url);
+    
+    if ((twitchClipId || youtubeVideoId) && url.trim() !== "") {
       setIsLoadingMetadata(true);
       try {
-        const metadata = await fetchTwitchClipMetadata(url);
-        console.log('📥 Frontend received metadata from API:', {
+        let metadata = null;
+        let platform = '';
+        
+        if (twitchClipId) {
+          metadata = await fetchTwitchClipMetadata(url);
+          platform = 'Twitch';
+        } else if (youtubeVideoId) {
+          metadata = await fetchYouTubeMetadata(url);
+          platform = 'YouTube';
+        }
+        
+        console.log(`📥 Frontend received ${platform} metadata from API:`, {
           streamerProfileImageUrl: metadata?.streamerProfileImageUrl,
           gameBoxArtUrl: metadata?.gameBoxArtUrl,
           hasStreamerImage: !!metadata?.streamerProfileImageUrl,
@@ -67,9 +79,9 @@ export default function SubmitClipPage() {
           });
           
           setMetadataExtracted(true);
-          setSuccessMessage("✨ Clip metadata extracted successfully!");
+          setSuccessMessage(`✨ ${platform} metadata extracted successfully!`);
         } else {
-          setErrors(["Could not extract metadata from this Twitch clip. Please fill in the details manually."]);
+          setErrors([`Could not extract metadata from this ${platform} ${platform === 'YouTube' ? 'video' : 'clip'}. Please fill in the details manually.`]);
         }
       } catch (error) {
         console.error("Error extracting metadata:", error);
@@ -89,9 +101,10 @@ export default function SubmitClipPage() {
     if (!clipUrl.trim()) validationErrors.push("Clip URL is required");
     else if (!validateClipUrl(clipUrl)) validationErrors.push("Please enter a valid Twitch clip or YouTube URL");
     
-    // For non-Twitch clips or if metadata extraction failed, require manual input
+    // For clips where metadata extraction failed, require manual input
     const isTwitchClip = extractTwitchClipId(clipUrl) !== null;
-    if (!isTwitchClip || !metadataExtracted) {
+    const isYouTubeVideo = extractYouTubeVideoId(clipUrl) !== null;
+    if ((!isTwitchClip && !isYouTubeVideo) || !metadataExtracted) {
       if (!title.trim()) validationErrors.push("Title is required");
       if (!game.trim()) validationErrors.push("Game is required");
       if (!streamer.trim()) validationErrors.push("Streamer name is required");
@@ -112,8 +125,8 @@ export default function SubmitClipPage() {
         description,
         streamer,
         submittedBy: user ? user.displayName || "Unknown User" : "Anonymous",
-        streamerProfileImageUrl: streamerProfileImageUrl || null,
-        gameBoxArtUrl: gameBoxArtUrl || null
+        streamerProfileImageUrl: streamerProfileImageUrl || undefined,
+        gameBoxArtUrl: gameBoxArtUrl || undefined
       };
       
       console.log('💾 Data being submitted to database:', {
@@ -205,8 +218,8 @@ export default function SubmitClipPage() {
                 )}
               </div>
               <p className="text-red-200/70 text-sm mt-1">
-                {extractTwitchClipId(clipUrl) ? 
-                  "✨ Twitch clips auto-fill metadata!" : 
+                {extractTwitchClipId(clipUrl) || extractYouTubeVideoId(clipUrl) ? 
+                  "✨ Twitch & YouTube clips auto-fill metadata!" : 
                   "Submit Twitch and YouTube clips"
                 }
               </p>
@@ -224,7 +237,7 @@ export default function SubmitClipPage() {
               </label>
               <input
                 type="text"
-                placeholder={metadataExtracted ? "Auto-filled from Twitch clip" : "Epic hardcore death, Boss fight disaster, Build failure, etc."}
+                placeholder={metadataExtracted ? "Auto-filled from clip metadata" : "Epic hardcore death, Boss fight disaster, Build failure, etc."}
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 className={`w-full bg-black border rounded-lg px-4 py-3 text-white focus:border-red-400 focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 shadow-lg ${
@@ -275,7 +288,7 @@ export default function SubmitClipPage() {
               </label>
               <input
                 type="text"
-                placeholder={metadataExtracted ? "Auto-filled from Twitch clip" : "Name of the fallen warrior (streamer/creator)"}
+                placeholder={metadataExtracted ? "Auto-filled from clip metadata" : "Name of the fallen warrior (streamer/creator)"}
                 value={streamer}
                 onChange={(e) => setStreamer(e.target.value)}
                 className={`w-full bg-black border rounded-lg px-4 py-3 text-white focus:border-red-400 focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 shadow-lg ${

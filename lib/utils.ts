@@ -129,3 +129,81 @@ export const fetchTwitchClipMetadata = async (clipUrl: string): Promise<ClipMeta
     return null;
   }
 };
+
+// Extract video ID from YouTube URL
+export const extractYouTubeVideoId = (url: string): string | null => {
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=)([^&\n?#]+)/,
+    /(?:youtube\.com\/embed\/)([^&\n?#]+)/,
+    /(?:youtube\.com\/v\/)([^&\n?#]+)/,
+    /(?:youtu\.be\/)([^&\n?#]+)/,
+    /(?:youtube\.com\/shorts\/)([^&\n?#]+)/,
+  ];
+
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match && match[1]) {
+      return match[1];
+    }
+  }
+
+  return null;
+};
+
+// Fetch YouTube video metadata
+export const fetchYouTubeMetadata = async (videoUrl: string): Promise<ClipMetadata | null> => {
+  try {
+    const videoId = extractYouTubeVideoId(videoUrl);
+    if (!videoId) {
+      throw new Error('Invalid YouTube video URL');
+    }
+
+    console.log('🎬 Making API call to /api/youtube-metadata with videoUrl:', videoUrl);
+
+    // Call our API route that handles YouTube API requests
+    const response = await fetch('/api/youtube-metadata', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ videoUrl }),
+    });
+
+    console.log('🎬 API Response status:', response.status, response.statusText);
+    console.log('🎬 API Response ok:', response.ok);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('🎬 API Response error text:', errorText);
+      throw new Error('Failed to fetch metadata from YouTube API');
+    }
+
+    const responseText = await response.text();
+    console.log('🎬 Raw API response text:', responseText);
+
+    const data = JSON.parse(responseText);
+    console.log('🎬 Parsed API response data:', data);
+    
+    if (data.error) {
+      throw new Error(data.error);
+    }
+
+    const metadata: ClipMetadata = {
+      title: data.title,
+      streamer: data.streamer,
+      game: data.game,
+      thumbnailUrl: data.thumbnailUrl,
+      duration: data.duration,
+      createdAt: data.createdAt,
+      streamerProfileImageUrl: data.streamerProfileImageUrl,
+      gameBoxArtUrl: data.gameBoxArtUrl,
+    };
+
+    console.log('🎬 Final YouTube metadata object being returned to frontend:', metadata);
+    
+    return metadata;
+  } catch (error) {
+    console.error('🎬 Error fetching YouTube metadata:', error);
+    return null;
+  }
+};

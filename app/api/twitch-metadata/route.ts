@@ -41,7 +41,7 @@ async function getTwitchAccessToken(): Promise<string> {
     // Set expiration to 5 minutes before actual expiry for safety
     tokenExpiresAt = Date.now() + (data.expires_in - 300) * 1000;
 
-    return accessToken;
+    return accessToken!;
   } catch (error) {
     console.error('Error getting Twitch access token:', error);
     throw error;
