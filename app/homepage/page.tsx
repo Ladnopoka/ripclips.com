@@ -160,6 +160,27 @@ const ClipCard: React.FC<ClipCardProps> = ({ clip, onLikeChange, isPlaying, onPl
     }
   };
 
+  const handleStreamerClick = () => {
+    // Extract channel URL from clip URL
+    let channelUrl = '';
+    
+    if (clip.clipUrl.includes('twitch.tv')) {
+      // For Twitch clips, extract the streamer name and create channel URL
+      const match = clip.clipUrl.match(/twitch\.tv\/(\w+)/);
+      if (match && match[1]) {
+        channelUrl = `https://www.twitch.tv/${match[1]}`;
+      }
+    } else if (clip.clipUrl.includes('youtube.com') || clip.clipUrl.includes('youtu.be')) {
+      // For YouTube clips, try to extract channel from URL or use search
+      // This is more complex for YouTube, so we'll search for the streamer name
+      channelUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(clip.streamer)}`;
+    }
+    
+    if (channelUrl) {
+      window.open(channelUrl, '_blank');
+    }
+  };
+
   // Debug logging to see what image URLs we have
   console.log(`📺 Clip data for ${clip.streamer} (ID: ${clip.id}):`, {
     streamerProfileImageUrl: clip.streamerProfileImageUrl,
@@ -196,7 +217,12 @@ const ClipCard: React.FC<ClipCardProps> = ({ clip, onLikeChange, isPlaying, onPl
             <div className={`w-6 h-6 bg-gradient-to-br from-red-600 to-red-800 rounded-full flex items-center justify-center text-white text-xs font-medium ${clip.streamerProfileImageUrl ? 'hidden' : ''}`}>
               {clip.streamer[0].toUpperCase()}
             </div>
-            <span className="text-red-300 font-medium text-sm">{clip.streamer}</span>
+            <span 
+              onClick={handleStreamerClick}
+              className="text-red-300 font-medium text-sm cursor-pointer hover:text-red-200 transition-colors"
+            >
+              {clip.streamer}
+            </span>
             <span className="text-red-200/40 text-xs">•</span>
             <span className="text-red-200/60 text-xs">{formatTimestamp(clip.submittedAt)}</span>
           </div>
