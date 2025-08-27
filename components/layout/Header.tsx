@@ -60,7 +60,7 @@ export const Header: React.FC = () => {
                 Browse Clips
               </Link>
               <Link href="/support" className="text-red-200 hover:text-red-400 transition-colors font-medium flex items-center space-x-1">
-                <span>☕Support</span>
+                <span>☕Support Us</span>
               </Link>
             </nav>
           </div>

@@ -301,8 +301,17 @@ const ClipCard: React.FC<ClipCardProps> = ({ clip, onLikeChange, isPlaying, onPl
               <span>Share</span>
             </button>
           </div>
-          
-          <div className="text-red-200/60 text-sm">{clip.views} views</div>
+
+          <div className="flex items-center space-x-3">
+            <div className="text-red-200/60 text-sm">
+              Submitted by {clip.submittedBy ? (
+                <span className="text-red-300">{clip.submittedBy}</span>
+              ) : (
+                "anonymous"
+              )}
+            </div>
+            <div className="text-red-200/60 text-sm">{clip.views} views</div>
+          </div>
         </div>
 
         {/* Login prompt for non-authenticated users */}
