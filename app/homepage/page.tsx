@@ -134,6 +134,28 @@ const ClipCard: React.FC<ClipCardProps> = ({ clip, onLikeChange, isPlaying, onPl
     }
   };
 
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(clip.clipUrl);
+      // You could add a toast notification here if desired
+      console.log("Clip link copied to clipboard:", clip.clipUrl);
+    } catch (error) {
+      console.error("Failed to copy link:", error);
+      // Fallback for older browsers
+      try {
+        const textArea = document.createElement('textarea');
+        textArea.value = clip.clipUrl;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        console.log("Clip link copied to clipboard (fallback):", clip.clipUrl);
+      } catch (fallbackError) {
+        console.error("Fallback copy also failed:", fallbackError);
+      }
+    }
+  };
+
   // Debug logging to see what image URLs we have
   console.log(`📺 Clip data for ${clip.streamer} (ID: ${clip.id}):`, {
     streamerProfileImageUrl: clip.streamerProfileImageUrl,
@@ -294,11 +316,14 @@ const ClipCard: React.FC<ClipCardProps> = ({ clip, onLikeChange, isPlaying, onPl
               <span>{clip.comments || 0}</span>
             </button> */}
 
-            <button className="flex items-center space-x-2 text-red-200/60 hover:text-red-400 transition-colors">
+            <button 
+              onClick={handleCopyLink}
+              className="flex items-center space-x-2 text-red-200/60 hover:text-red-400 transition-colors"
+            >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
               </svg>
-              <span>Share</span>
+              <span className="-ml-1">Copy Link</span>
             </button>
           </div>
 
