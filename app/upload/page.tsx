@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAuthContext } from "@/lib/AuthContext";
-import { useRouter } from "next/navigation";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { SuccessMessage } from "@/components/ui/SuccessMessage";
@@ -11,7 +10,6 @@ import { fetchTwitchClipMetadata, extractTwitchClipId, fetchYouTubeMetadata, ext
 
 export default function SubmitClipPage() {
   const { user } = useAuthContext();
-  const router = useRouter();
   const [clipUrl, setClipUrl] = useState("");
   const [title, setTitle] = useState("");
   const [game, setGame] = useState("");
@@ -284,7 +282,7 @@ export default function SubmitClipPage() {
             {/* Streamer */}
             <div>
               <label className="block text-red-300 text-sm font-medium mb-2">
-                Who RIP'd? {metadataExtracted && <span className="text-green-400 text-xs">(Auto-filled)</span>}
+                Who RIP&apos;d? {metadataExtracted && <span className="text-green-400 text-xs">(Auto-filled)</span>}
               </label>
               <input
                 type="text"

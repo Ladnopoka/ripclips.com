@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useAuthContext } from "@/lib/AuthContext";
 import { getApprovedClips, hasUserLikedClip, likeClip, unlikeClip, incrementViews, type ClipSubmission } from "@/lib/database";
 import { formatEmbedUrl, formatTimestamp } from "@/lib/utils";
@@ -514,7 +514,7 @@ export default function Homepage() {
   }, [filteredClips, currentPage, CLIPS_PER_PAGE]);
 
   // Load more clips function
-  const loadMoreClips = () => {
+  const loadMoreClips = useCallback(() => {
     if (!loadingMore && hasMore) {
       setLoadingMore(true);
       // Simulate loading delay (you can remove this in production)
@@ -523,7 +523,7 @@ export default function Homepage() {
         setLoadingMore(false);
       }, 300);
     }
-  };
+  }, [loadingMore, hasMore]);
 
   // Infinite scroll observer
   useEffect(() => {
@@ -547,7 +547,7 @@ export default function Homepage() {
         observer.unobserve(observerTarget);
       }
     };
-  }, [hasMore, loadingMore, loading]);
+  }, [hasMore, loadingMore, loading, loadMoreClips]);
 
   // Handler for updating like state in the UI
   const handleLikeChange = (clipId: string, newLikedState: boolean, newLikeCount: number) => {

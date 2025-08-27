@@ -36,7 +36,7 @@ export const formatEmbedUrl = (clipUrl: string): string => {
 };
 
 // Helper function to format timestamp
-export const formatTimestamp = (timestamp: any): string => {
+export const formatTimestamp = (timestamp: { toDate?: () => Date } | null | undefined): string => {
   if (!timestamp || !timestamp.toDate) return "Recently";
   
   const now = new Date();
