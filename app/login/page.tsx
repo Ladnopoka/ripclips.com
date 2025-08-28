@@ -1,67 +1,177 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { auth } from "@/lib/firebase";
-import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/useAuth";
+import { validateLoginForm } from "@/lib/validation";
+import { ErrorMessage } from "@/components/ui/ErrorMessage";
+import { SuccessMessage } from "@/components/ui/SuccessMessage";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
+  const [errors, setErrors] = useState<string[]>([]);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [showResetForm, setShowResetForm] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const [isResetting, setIsResetting] = useState(false);
+  
+  const { login, resetPassword } = useAuth();
   const router = useRouter();
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        router.push("/homepage"); // redirect logged-in users
-      }
-    });
-
-    return () => unsubscribe();
-  }, [router]); 
-
   const handleLogin = async () => {
+    // Reset messages
+    setErrors([]);
+    setSuccessMessage("");
+
+    // Validate form
+    const validation = validateLoginForm(email, password);
+    if (!validation.isValid) {
+      setErrors(validation.errors);
+      return;
+    }
+
+    setIsLoading(true);
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      setMessage(`Welcome back, ${userCredential.user.email}`);
-      router.push("/homepage");
-    } catch (error: any) {
-      setMessage(`${error.code}: ${error.message}`);
+      const user = await login(email, password);
+      setSuccessMessage(`Welcome back, ${user.email}!`);
+      setTimeout(() => router.push("/dashboard"), 1500);
+    } catch (error: unknown) {
+      const firebaseError = error as { code?: string };
+      const errorMessage = firebaseError.code === 'auth/user-not-found' 
+        ? "No account found with this email address"
+        : firebaseError.code === 'auth/wrong-password'
+        ? "Incorrect password"
+        : firebaseError.code === 'auth/invalid-credential'
+        ? "Invalid email or password"
+        : "Login failed. Please try again.";
+      setErrors([errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handlePasswordReset = async () => {
+    if (!resetEmail.trim()) {
+      setErrors(["Please enter your email address"]);
+      return;
+    }
+
+    setIsResetting(true);
+    setErrors([]);
+    setSuccessMessage("");
+
+    try {
+      await resetPassword(resetEmail);
+      setSuccessMessage("Password reset email sent! Check your inbox and spam folder. If you don't see it in 5-10 minutes, try again.");
+      setShowResetForm(false);
+      setResetEmail("");
+    } catch (error: unknown) {
+      console.error("Password reset error:", error);
+      const firebaseError = error as { code?: string; message?: string };
+      let errorMessage = "Failed to send reset email. Please try again.";
+      
+      switch (firebaseError.code) {
+        case 'auth/user-not-found':
+          errorMessage = "No account found with this email address";
+          break;
+        case 'auth/invalid-email':
+          errorMessage = "Please enter a valid email address";
+          break;
+        case 'auth/too-many-requests':
+          errorMessage = "Too many requests. Please wait a few minutes before trying again.";
+          break;
+        case 'auth/network-request-failed':
+          errorMessage = "Network error. Please check your connection and try again.";
+          break;
+        default:
+          errorMessage = `Error: ${firebaseError.message || 'Unknown error occurred'}`;
+      }
+      setErrors([errorMessage]);
+    } finally {
+      setIsResetting(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-900 px-4">
-      <div className="bg-slate-800 p-8 rounded-xl shadow-lg text-center max-w-md w-full">
-        <h1 className="text-4xl font-bold text-green-500 mb-6">Login</h1>
-        <p className="text-green-200 mb-8">Enter your details to log in</p>
-        <input
-          className="border border-green-400 bg-slate-900 p-2 rounded text-white focus:border-green-600 focus:ring-green-200 focus:ring-2 w-full mb-4"
-          type="email"
-          placeholder="Enter email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          className="border border-green-400 bg-slate-900 p-2 rounded text-white focus:border-green-600 focus:ring-green-200 focus:ring-2 w-full mb-6"
-          type="password"
-          placeholder="Enter password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+    <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4 py-8">
+      <div className="bg-gradient-to-b from-gray-900 to-red-950/30 p-8 rounded-xl shadow-2xl text-center max-w-md w-full border border-red-900/50">
+        <h1 className="text-4xl font-bold text-red-500 mb-6 drop-shadow-lg">💀 Login</h1>
+        <p className="text-red-200 mb-8">Enter the death arena</p>
+        
+        {!showResetForm ? (
+          <>
+            <input
+              className="border border-red-600 bg-black p-3 rounded-lg text-white focus:border-red-400 focus:ring-red-500 focus:ring-2 w-full mb-4 shadow-lg"
+              type="email"
+              placeholder="💀 Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <input
+              className="border border-red-600 bg-black p-3 rounded-lg text-white focus:border-red-400 focus:ring-red-500 focus:ring-2 w-full mb-4 shadow-lg"
+              type="password"
+              placeholder="🗡️ Enter password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button
+              className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-6 py-3 rounded-lg transition-all w-full mb-4 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-xl border border-red-800 font-medium"
+              onClick={handleLogin}
+              disabled={isLoading}
+            >
+              {isLoading ? <LoadingSpinner size="sm" /> : "⚔️ Enter Arena"}
+            </button>
+            
+            <button
+              className="text-red-400 hover:text-red-300 hover:underline transition-colors text-sm mb-4"
+              onClick={() => setShowResetForm(true)}
+            >
+              🔑 Forgot your password?
+            </button>
+          </>
+        ) : (
+          <>
+            <p className="text-red-200 mb-4 text-sm">Enter your email to receive a password reset link</p>
+            <input
+              className="border border-red-600 bg-black p-3 rounded-lg text-white focus:border-red-400 focus:ring-red-500 focus:ring-2 w-full mb-4 shadow-lg"
+              type="email"
+              placeholder="💀 Enter your email"
+              value={resetEmail}
+              onChange={(e) => setResetEmail(e.target.value)}
+            />
+            <button
+              className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-6 py-3 rounded-lg transition-all w-full mb-4 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-xl border border-red-800 font-medium"
+              onClick={handlePasswordReset}
+              disabled={isResetting}
+            >
+              {isResetting ? <LoadingSpinner size="sm" /> : "Send Email to reset password"}
+            </button>
+            
+            <button
+              className="text-red-400 hover:text-red-300 hover:underline transition-colors text-sm mb-4"
+              onClick={() => {
+                setShowResetForm(false);
+                setResetEmail("");
+                setErrors([]);
+                setSuccessMessage("");
+              }}
+            >
+              ← Back to login
+            </button>
+          </>
+        )}
+        
+        <ErrorMessage errors={errors} className="mb-4" />
+        <SuccessMessage message={successMessage} className="mb-4" />
+        
         <button
-          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded transition w-full mb-4"
-          onClick={handleLogin}
-        >
-          Login
-        </button>
-        {message && <p className="mt-2 text-green-200">{message}</p>}
-        <button
-          className="mt-6 text-green-400 hover:underline"
+          className="mt-6 text-red-400 hover:text-red-300 hover:underline transition-colors"
           onClick={() => router.push("/register")}
         >
-          Don't have an account? Register
+          💀 New to the carnage? Join us
         </button>
       </div>
     </div>

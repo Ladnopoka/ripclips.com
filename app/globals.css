@@ -25,3 +25,30 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Scrolling title animation - hover pause functionality */
+.title-container h2:hover {
+  animation-play-state: paused !important;
+}
+
+.title-container {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Copy tooltip fade-in animation */
+@keyframes fade-in {
+  0% { 
+    opacity: 0; 
+    margin-top: 5px;
+  }
+  100% { 
+    opacity: 1; 
+    margin-top: 0;
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out;
+}

@@ -1,0 +1,42 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow read access to approved clips for everyone
+    // Allow view tracking for everyone (no auth required)
+    // Allow admins full access
+    match /clip_submissions/{clipId} {
+      allow read: if resource.data.status == 'approved';
+      // Allow specific admin emails to read/write all clips (including pending)
+      allow read, write: if request.auth != null && 
+        request.auth.token.email_verified == true && 
+        (request.auth.token.email == 'ladnopokaa@gmail.com' || 
+         request.auth.token.email == 'ivanovworkbusiness@gmail.com');
+      // Allow anyone to increment views (no auth required)
+      allow update: if onlyUpdatingFields(['views']);
+      // Allow authenticated users to update likes and comments counts
+      allow update: if request.auth != null && 
+        (onlyUpdatingFields(['likes']) || 
+         onlyUpdatingFields(['comments']));
+      allow create: if true; // Allow anyone to create clips
+    }
+    
+    // Allow everyone to read likes, but only authenticated users to create/delete
+    match /clip_likes/{likeId} {
+      allow read: if true;
+      allow write: if request.auth != null && 
+        (resource == null || resource.data.userId == request.auth.uid);
+    }
+    
+    // Allow everyone to read comments, but only authenticated users to create
+    match /clip_comments/{commentId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+    }
+    
+    // Helper function to check if only specific fields are being updated
+    function onlyUpdatingFields(fields) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields);
+    }
+  }
+}
