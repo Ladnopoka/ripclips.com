@@ -29,7 +29,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setUser(user);
+      // If user exists but displayName is null, reload the user to get updated profile
+      if (user && !user.displayName) {
+        try {
+          await user.reload();
+          // Get the refreshed user from auth.currentUser
+          setUser(auth.currentUser);
+        } catch (error) {
+          console.error("Error reloading user:", error);
+          setUser(user);
+        }
+      } else {
+        setUser(user);
+      }
       setLoading(false);
       
       // Set/remove auth cookie for middleware

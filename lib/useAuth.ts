@@ -36,6 +36,8 @@ export const useAuth = () => {
     await updateProfile(userCredential.user, {
       displayName: fullName,
     });
+    // Reload the user to get the updated profile
+    await userCredential.user.reload();
     return userCredential.user;
   };
 
