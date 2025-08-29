@@ -37,7 +37,7 @@ export default function LoginPage() {
     try {
       const user = await login(email, password);
       setSuccessMessage(`Welcome back, ${user.email}!`);
-      setTimeout(() => router.push("/dashboard"), 1500);
+      setTimeout(() => router.push("/"), 1500);
     } catch (error: unknown) {
       const firebaseError = error as { code?: string };
       const errorMessage = firebaseError.code === 'auth/user-not-found' 

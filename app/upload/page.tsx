@@ -161,9 +161,9 @@ export default function SubmitClipPage() {
   return (
     <div className="min-h-[calc(100vh-4rem)] py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-4xl font-bold text-red-500 mb-6 drop-shadow-lg">💀 Submit RIP Clip</h1>
+        <h1 className="text-4xl font-bold text-red-500 mb-6 drop-shadow-lg">Submit RIP Clip</h1>
         <p className="text-xl text-red-200 mb-8">
-          Share brutal ARPG RIPs from Twitch or YouTube!
+          Share brutal RIP Clips from Twitch or YouTube!
         </p>
 
         {/* Authentication Status */}
@@ -266,15 +266,15 @@ export default function SubmitClipPage() {
                   }`}
                 >
                   <option value="">Select Game</option>
-                  <option value="Path of Exile">💀 Path of Exile</option>
-                  <option value="Path of Exile 2">🔥 Path of Exile 2</option>
-                  <option value="Last Epoch">⚰️ Last Epoch</option>
-                  <option value="Diablo 4">🔥 Diablo 4</option>
-                  <option value="Diablo 3">🩸 Diablo 3</option>
-                  <option value="Diablo 2">⚔️ Diablo 2</option>
-                  <option value="Titan Quest 2">⚡ Titan Quest 2</option>
-                  <option value="World of Warcraft">🏰 World of Warcraft</option>
-                  <option value="Other">🗡️ Other Games</option>
+                  <option value="Path of Exile">Path of Exile</option>
+                  <option value="Path of Exile 2">Path of Exile 2</option>
+                  <option value="Last Epoch">Last Epoch</option>
+                  <option value="Diablo 4">Diablo 4</option>
+                  <option value="Diablo 3">Diablo 3</option>
+                  <option value="Diablo 2">Diablo 2</option>
+                  <option value="Titan Quest 2">Titan Quest 2</option>
+                  <option value="World of Warcraft">World of Warcraft</option>
+                  <option value="Other">Other Games</option>
                 </select>
               )}
             </div>
@@ -317,7 +317,7 @@ export default function SubmitClipPage() {
               disabled={isSubmitting}
               className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-medium transition-all flex items-center justify-center shadow-xl border border-red-800 cursor-pointer"
             >
-              {isSubmitting ? <LoadingSpinner size="sm" /> : "🩸 Submit RIP Clip"}
+              {isSubmitting ? <LoadingSpinner size="sm" /> : "Submit RIP Clip"}
             </button>
           </div>
         </div>
