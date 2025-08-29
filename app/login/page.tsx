@@ -98,22 +98,22 @@ export default function LoginPage() {
   return (
     <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4 py-8">
       <div className="bg-gradient-to-b from-gray-900 to-red-950/70 p-8 rounded-xl shadow-2xl text-center max-w-md w-full border border-red-900/50">
-        <h1 className="text-4xl font-bold text-red-500 mb-6 drop-shadow-lg">💀 Login</h1>
-        <p className="text-red-200 mb-8">Enter the death arena</p>
+        <h1 className="text-4xl font-bold text-red-500 mb-6 drop-shadow-lg">Login</h1>
+        <p className="text-red-200 mb-8">Enter RIP Clips</p>
         
         {!showResetForm ? (
           <>
             <input
               className="border border-red-600 bg-black p-3 rounded-lg text-white focus:border-red-400 focus:ring-red-500 focus:ring-2 w-full mb-4 shadow-lg"
               type="email"
-              placeholder="💀 Enter your email"
+              placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
             <input
               className="border border-red-600 bg-black p-3 rounded-lg text-white focus:border-red-400 focus:ring-red-500 focus:ring-2 w-full mb-4 shadow-lg"
               type="password"
-              placeholder="🗡️ Enter password"
+              placeholder="Enter password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
@@ -122,7 +122,7 @@ export default function LoginPage() {
               onClick={handleLogin}
               disabled={isLoading}
             >
-              {isLoading ? <LoadingSpinner size="sm" /> : "⚔️ Enter Arena"}
+              {isLoading ? <LoadingSpinner size="sm" /> : "Login to RIP Clips"}
             </button>
             
             <button
@@ -131,6 +131,7 @@ export default function LoginPage() {
             >
               🔑 Forgot your password?
             </button>
+            <br />
           </>
         ) : (
           <>
@@ -138,7 +139,7 @@ export default function LoginPage() {
             <input
               className="border border-red-600 bg-black p-3 rounded-lg text-white focus:border-red-400 focus:ring-red-500 focus:ring-2 w-full mb-4 shadow-lg"
               type="email"
-              placeholder="💀 Enter your email"
+              placeholder="Enter your email"
               value={resetEmail}
               onChange={(e) => setResetEmail(e.target.value)}
             />
@@ -161,6 +162,7 @@ export default function LoginPage() {
             >
               ← Back to login
             </button>
+            <br />
           </>
         )}
         
@@ -171,7 +173,7 @@ export default function LoginPage() {
           className="mt-6 text-red-400 hover:text-red-300 hover:underline transition-colors"
           onClick={() => router.push("/register")}
         >
-          💀 New to the carnage? Join us
+          New to RIP Clips? Join us
         </button>
       </div>
     </div>

@@ -14,7 +14,7 @@ A comprehensive log of all development changes, implementations, and improvement
 - **Complete Visual Transformation**:
   - Replaced green/slate color scheme with blood red and black
   - Added dramatic gradients and shadow effects
-  - Implemented death/carnage themed messaging throughout
+  - Implemented death/RIP clips themed messaging throughout
 
 #### Specific Updates:
 - **Header Component** (`components/layout/Header.tsx`):
@@ -24,24 +24,24 @@ A comprehensive log of all development changes, implementations, and improvement
   - Death-themed dropdown menu with blood emoji
 
 - **Homepage** (`app/homepage/page.tsx`):
-  - "Witness the CARNAGE" hero section
-  - "Death Arenas" game showcase
+  - "Witness the RIP CLIPS" hero section
+  - "RIP Clips Games" showcase
   - Blood-themed call-to-action buttons
   - Dark gradients with red accents
 
 - **Authentication Pages**:
-  - Login: "💀 Login - Enter the death arena"
-  - Register: "💀 Join the Arena - Create your RIP Clips enjoyer account"
+  - Login: "💀 Login - Enter RIP Clips"
+  - Register: "💀 Join RIP Clips - Create your RIP Clips enjoyer account"
   - Death-themed form placeholders and buttons
 
 - **Dashboard** (`app/dashboard/page.tsx`):
   - "💀 Welcome back" greeting
   - "Death Submissions", "Browse Deaths", "Death Statistics" cards
-  - "Recent Carnage" activity section
+  - "Recent RIP Clips" activity section
 
 - **Upload Page** (`app/upload/page.tsx`):
   - "💀 Submit Death Clip" interface
-  - Death-themed form fields ("Death Arena", "Victim/Streamer")
+  - Death-themed form fields ("RIP Clips", "Victim/Streamer")
   - Blood-red styling throughout
 
 #### Technical Details:

@@ -48,7 +48,7 @@ export default function DashboardPage() {
             
             <div className="bg-gradient-to-b from-red-950/50 to-black p-6 rounded-lg border border-red-900/50 shadow-xl">
               <h2 className="text-xl font-semibold text-red-300 mb-4">⚔️ Browse Deaths</h2>
-              <p className="text-red-200/70 mb-4">Witness epic ARPG carnage</p>
+              <p className="text-red-200/70 mb-4">Witness epic ARPG RIP clips</p>
               <button 
                 onClick={() => router.push("/clips")}
                 className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-4 py-2 rounded-lg transition-all shadow-lg border border-red-800"
@@ -67,7 +67,7 @@ export default function DashboardPage() {
           </div>
           
           <div className="mt-8 bg-gradient-to-b from-red-950/50 to-black p-6 rounded-lg border border-red-900/50 shadow-xl">
-            <h2 className="text-xl font-semibold text-red-300 mb-4">🔥 Recent Carnage</h2>
+            <h2 className="text-xl font-semibold text-red-300 mb-4">🔥 Recent RIP Clips</h2>
             <p className="text-red-200/70">Your recent death submissions and activity will appear here.</p>
           </div>
         </div>

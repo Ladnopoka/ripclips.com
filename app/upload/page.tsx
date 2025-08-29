@@ -286,7 +286,7 @@ export default function SubmitClipPage() {
               </label>
               <input
                 type="text"
-                placeholder={metadataExtracted ? "Auto-filled from clip metadata" : "Name of the fallen warrior (streamer/creator)"}
+                placeholder={metadataExtracted ? "Auto-filled from clip metadata" : "Name of the fallen gamer (streamer/creator)"}
                 value={streamer}
                 onChange={(e) => setStreamer(e.target.value)}
                 className={`w-full bg-black border rounded-lg px-4 py-3 text-white focus:border-red-400 focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 shadow-lg ${
@@ -301,7 +301,7 @@ export default function SubmitClipPage() {
                 RIP Description (Optional)
               </label>
               <textarea
-                placeholder="Describe the carnage... What led to this epic death? Build details, boss mechanics, etc."
+                placeholder="Describe the RIP... What led to this epic death? Build details, boss mechanics, etc."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={4}
