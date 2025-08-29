@@ -4,7 +4,16 @@ import Link from "next/link";
 
 export default function SupportPage() {
   return (
-    <div className="min-h-screen bg-black text-red-200">
+    <div 
+      className="min-h-screen text-red-200"
+      style={{
+        backgroundImage: 'url(/wallpaper_tower.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed'
+      }}
+    >
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
           {/* Header Section */}
