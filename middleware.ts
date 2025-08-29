@@ -10,6 +10,11 @@ const authRoutes = ['/login', '/register'];
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
+  // Handle root path redirect at middleware level as fallback
+  if (pathname === '/') {
+    return NextResponse.redirect(new URL('/homepage', request.url));
+  }
+  
   // Check if user has a session token (you'll need to implement proper token validation)
   // For now, we'll use a simple approach - in production, verify JWT tokens
   const hasAuth = request.cookies.get('auth-token');
@@ -26,7 +31,7 @@ export function middleware(request: NextRequest) {
   // Redirect authenticated users away from auth pages
   if (authRoutes.some(route => pathname.startsWith(route))) {
     if (hasAuth) {
-      return NextResponse.redirect(new URL('/dashboard', request.url));
+      return NextResponse.redirect(new URL('/homepage', request.url));
     }
   }
   
