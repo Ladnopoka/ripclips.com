@@ -51,12 +51,12 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4 py-8">
-      <div className="bg-gradient-to-b from-gray-900 to-red-950/30 p-8 rounded-xl shadow-2xl text-center max-w-md w-full border border-red-900/50">
+      <div className="bg-gradient-to-b from-gray-900 to-red-950/70 p-8 rounded-xl shadow-2xl text-center max-w-md w-full border border-red-900/50">
         <h1 className="text-4xl font-bold text-red-500 mb-6 drop-shadow-lg">
           💀 Join the Arena
         </h1>
         <p className="text-red-200 mb-8">
-          🩸 Create your death-seeker account
+          🩸 Create your RIP Clips enjoyer account
         </p>
         <input
           className="border border-red-600 bg-black p-3 rounded-lg text-white focus:border-red-400 focus:ring-red-500 focus:ring-2 w-full mb-4 shadow-lg"
@@ -93,7 +93,7 @@ export default function RegisterPage() {
           className="mt-6 text-red-400 hover:text-red-300 hover:underline transition-colors"
           onClick={() => router.push("/login")}
         >
-          ⚔️ Already a death seeker? Enter here
+          ⚔️ Already a RIP Clips enjoyer? Enter here
         </button>
       </div>
     </div>

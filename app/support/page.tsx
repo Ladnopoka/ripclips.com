@@ -62,28 +62,28 @@ export default function SupportPage() {
           {/* Why Support Section */}
           <div className="mt-16 bg-gray-900 border border-red-800 rounded-lg p-8 shadow-2xl">
             <h2 className="text-2xl font-semibold text-red-400 mb-6 text-center">
-              💀 Why Support RIP Clips? 💀
+              Why Support RIP Clips?
             </h2>
             <div className="grid md:grid-cols-3 gap-6 text-center">
               <div className="space-y-2">
                 <div className="text-3xl">🔧</div>
                 <h3 className="text-red-300 font-medium">Site Maintenance</h3>
                 <p className="text-sm text-red-400">
-                  Keep servers running and ensure smooth performance
+                  Keep servers running and ensure smooth performance and rapid bug fixes
                 </p>
               </div>
               <div className="space-y-2">
                 <div className="text-3xl">✨</div>
                 <h3 className="text-red-300 font-medium">New Features</h3>
                 <p className="text-sm text-red-400">
-                  Add new tools, filters, and improvements based on feedback
+                  Add new tools, filters, improvements, and new features based on feedback
                 </p>
               </div>
               <div className="space-y-2">
                 <div className="text-3xl">📈</div>
                 <h3 className="text-red-300 font-medium">Growth</h3>
                 <p className="text-sm text-red-400">
-                  Expand our clip database and enhance user experience
+                  Expand our clip database and enhance user experience. Promote your clips and channels
                 </p>
               </div>
             </div>

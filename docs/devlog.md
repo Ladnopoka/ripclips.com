@@ -31,7 +31,7 @@ A comprehensive log of all development changes, implementations, and improvement
 
 - **Authentication Pages**:
   - Login: "💀 Login - Enter the death arena"
-  - Register: "💀 Join the Arena - Create your death-seeker account"
+  - Register: "💀 Join the Arena - Create your RIP Clips enjoyer account"
   - Death-themed form placeholders and buttons
 
 - **Dashboard** (`app/dashboard/page.tsx`):

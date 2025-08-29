@@ -115,7 +115,7 @@ export default function AuthActionPage() {
           backgroundAttachment: 'fixed'
         }}
       >
-        <div className="bg-gradient-to-b from-gray-900 to-red-950/30 p-8 rounded-xl shadow-2xl text-center max-w-md w-full border border-red-900/50">
+        <div className="bg-gradient-to-b from-gray-900 to-red-950/70 p-8 rounded-xl shadow-2xl text-center max-w-md w-full border border-red-900/50">
           <LoadingSpinner size="lg" />
           <p className="mt-4 text-red-200">Verifying reset link...</p>
         </div>
@@ -135,7 +135,7 @@ export default function AuthActionPage() {
           backgroundAttachment: 'fixed'
         }}
       >
-        <div className="bg-gradient-to-b from-gray-900 to-red-950/30 p-8 rounded-xl shadow-2xl text-center max-w-md w-full border border-red-900/50">
+        <div className="bg-gradient-to-b from-gray-900 to-red-950/70 p-8 rounded-xl shadow-2xl text-center max-w-md w-full border border-red-900/50">
           <div className="text-6xl mb-4">❌</div>
           <h1 className="text-3xl font-bold text-red-400 mb-4">Invalid Link</h1>
           <p className="text-red-200 mb-6">This password reset link is invalid or has expired.</p>
