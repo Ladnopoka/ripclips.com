@@ -35,7 +35,7 @@ export default function RegisterPage() {
     try {
       const user = await register(email, password, fullName);
       setSuccessMessage(`Welcome, ${user.displayName}! Registration successful.`);
-      setTimeout(() => router.push("/dashboard"), 1500);
+      setTimeout(() => router.push("/"), 1500);
     } catch (error: unknown) {
       const firebaseError = error as { code?: string };
       const errorMessage = firebaseError.code === 'auth/email-already-in-use'

@@ -30,6 +30,15 @@ export default function DashboardPage() {
   return (
     <div className="min-h-[calc(100vh-4rem)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Development Notice */}
+        <div className="bg-gradient-to-b from-gray-900 to-red-950/50 rounded-xl shadow-2xl p-6 border border-red-900/50 mb-8 text-center">
+          <div className="text-5xl mb-4">🚧</div>
+          <h2 className="text-2xl font-bold text-yellow-400 mb-3">Dashboard in Development</h2>
+          <p className="text-red-200/80 max-w-2xl mx-auto">
+            We're working hard to bring you an awesome dashboard experience! Many features here are still being developed and will be fully functional soon.
+          </p>
+        </div>
+
         <div className="bg-gradient-to-b from-gray-900 to-red-950/30 rounded-xl shadow-2xl p-8 border border-red-900/50">
           <h1 className="text-4xl font-bold text-red-500 mb-6 drop-shadow-lg">
             💀 Welcome back, {user.displayName}!
