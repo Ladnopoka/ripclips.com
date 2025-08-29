@@ -51,21 +51,26 @@ export default function AboutPage() {
           <h2 className="text-3xl font-bold text-white text-center mb-12 drop-shadow-lg">
             Games
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
             <div className="bg-gradient-to-b from-gray-900 to-red-950/50 p-6 rounded-xl text-center border border-red-900/50 shadow-2xl">
-              <div className="w-16 h-16 bg-gradient-to-br from-orange-600 to-red-700 rounded-full mx-auto mb-4 shadow-lg border-2 border-red-800"></div>
-              <h3 className="text-xl font-semibold text-red-300 mb-2">Path of Exile</h3>
-              <p className="text-red-200/70">💀 Brutal boss encounters, build failures, and hardcore devastation</p>
+              <img src="/path_of_exile.jpg" alt="Path of Exile 1" className="w-32 h-40 rounded-lg mx-auto mb-4 shadow-lg border-2 border-red-800 object-cover" />
+              <h3 className="text-xl font-semibold text-red-300 mb-2">Path of Exile 1</h3>
             </div>
             <div className="bg-gradient-to-b from-gray-900 to-red-950/50 p-6 rounded-xl text-center border border-red-900/50 shadow-2xl">
-              <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-red-700 rounded-full mx-auto mb-4 shadow-lg border-2 border-red-800"></div>
+              <img src="/path_of_exile_2.jpg" alt="Path of Exile 2" className="w-32 h-40 rounded-lg mx-auto mb-4 shadow-lg border-2 border-red-800 object-cover" />
+              <h3 className="text-xl font-semibold text-red-300 mb-2">Path of Exile 2</h3>
+            </div>
+            <div className="bg-gradient-to-b from-gray-900 to-red-950/50 p-6 rounded-xl text-center border border-red-900/50 shadow-2xl">
+              <img src="/last_epoch.jpg" alt="Last Epoch" className="w-32 h-40 rounded-lg mx-auto mb-4 shadow-lg border-2 border-red-800 object-cover" />
               <h3 className="text-xl font-semibold text-red-300 mb-2">Last Epoch</h3>
-              <p className="text-red-200/70">⚔️ Time-twisted deaths and legendary character losses</p>
             </div>
             <div className="bg-gradient-to-b from-gray-900 to-red-950/50 p-6 rounded-xl text-center border border-red-900/50 shadow-2xl">
-              <div className="w-16 h-16 bg-gradient-to-br from-red-600 to-red-800 rounded-full mx-auto mb-4 shadow-lg border-2 border-red-900"></div>
-              <h3 className="text-xl font-semibold text-red-300 mb-2">Diablo Series</h3>
-              <p className="text-red-200/70">🔥 Demonic executions and treasure hunt disasters</p>
+              <img src="/diablo2.jpg" alt="Diablo 2" className="w-32 h-40 rounded-lg mx-auto mb-4 shadow-lg border-2 border-red-900 object-cover" />
+              <h3 className="text-xl font-semibold text-red-300 mb-2">Diablo 2</h3>
+            </div>
+            <div className="bg-gradient-to-b from-gray-900 to-red-950/50 p-6 rounded-xl text-center border border-red-900/50 shadow-2xl">
+              <img src="/diablo4.jpg" alt="Diablo 4" className="w-32 h-40 rounded-lg mx-auto mb-4 shadow-lg border-2 border-red-900 object-cover" />
+              <h3 className="text-xl font-semibold text-red-300 mb-2">Diablo 4</h3>
             </div>
           </div>
         </div>
@@ -81,29 +86,37 @@ export default function AboutPage() {
             <div className="text-center">
               <div className="w-12 h-12 bg-gradient-to-r from-red-600 to-red-800 rounded-lg mx-auto mb-4 flex items-center justify-center shadow-lg border border-red-900">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-red-300 mb-2">💀 Easy Submission</h3>
-              <p className="text-red-200/70">Submit brutal Twitch and YouTube RIP clips with ease</p>
-            </div>
-            <div className="text-center">
-              <div className="w-12 h-12 bg-gradient-to-r from-red-600 to-red-800 rounded-lg mx-auto mb-4 flex items-center justify-center shadow-lg border border-red-900">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-red-300 mb-2">⚔️ RIP Clips Community</h3>
-              <p className="text-red-200/70">Join fellow RIP enthusiasts and share in the excitement</p>
+              <h3 className="text-xl font-semibold text-red-300 mb-2">💀 Join Hardcore Community</h3>
+              <p className="text-red-200/70">Share your clips for others amusement and enjoy watching others RIP</p>
             </div>
             <div className="text-center">
               <div className="w-12 h-12 bg-gradient-to-r from-red-600 to-red-800 rounded-lg mx-auto mb-4 flex items-center justify-center shadow-lg border border-red-900">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-red-300 mb-2">🔥 Legendary RIPs</h3>
-              <p className="text-red-200/70">Witness the most spectacular character annihilations</p>
+              <h3 className="text-xl font-semibold text-red-300 mb-2">⚔️ Discuss RIP Clips</h3>
+              <p className="text-red-200/70">Use comment section to talk about the RIP clips or just leave a git gud message</p>
+            </div>
+            <div className="text-center">
+              <div className="w-12 h-12 bg-gradient-to-r from-red-600 to-red-800 rounded-lg mx-auto mb-4 flex items-center justify-center shadow-lg border border-red-900">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M12 7a1 1 0 110-2 1 1 0 010 2zm3 0a1 1 0 110-2 1 1 0 010 2zm-6 0a1 1 0 110-2 1 1 0 010 2z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-red-300 mb-4">🔥 alkLFG</h3>
+              <picture className="block mx-auto">
+                <source srcSet="/alkLFG-4x.avif" type="image/avif" />
+                <source srcSet="/alkLFG-4x.webp" type="image/webp" />
+                <img
+                  src="/alkLFG-4x.gif"
+                  alt="alkLFG"
+                  className="h-24 w-auto mx-auto rounded-lg shadow-lg"
+                />
+              </picture>
             </div>
           </div>
         </div>
@@ -113,11 +126,8 @@ export default function AboutPage() {
       <section className="py-16 px-4 bg-gradient-to-r from-red-950 via-black to-red-950">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl font-bold text-white mb-4 drop-shadow-lg">
-            Ready to witness the Misery of others?
+            Ready to join the fun?
           </h2>
-          <p className="text-red-200 mb-8 text-lg drop-shadow-lg">
-            Join thousands of RIP-seekers watching the most brutal ARPG moments ever recorded.
-          </p>
           <Link 
             href="/register"
             className="bg-gradient-to-r from-red-700 to-red-800 hover:from-red-800 hover:to-red-900 text-white px-8 py-3 rounded-lg text-lg font-medium transition-all shadow-2xl border border-red-900"
